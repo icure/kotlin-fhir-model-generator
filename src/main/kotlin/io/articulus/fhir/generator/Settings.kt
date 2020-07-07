@@ -2,14 +2,18 @@ package io.articulus.fhir.generator
 
 class Settings {
     companion object {
+        val topLevelClasses: List<String> = listOf("Patient")
+        val topLevelMappings: Map<String,String> = mapOf("id" to "_id")
+        val topLevelNotNulls: List<String> = listOf("id")
+
         /**
          * http://hl7.org/fhir is the latest release. To generate other versions go to
          * http://hl7.org/fhir/directory.html and select which version to use.
          */
         const val baseUrl = "http://hl7.org/fhir/"
-        const val modelVersion = "dstu3"
+        const val modelVersion = "r4"
 
-        val downloadFiles = (System.getenv("downloadFiles") ?: "false").equals("true", true)
+        val downloadFiles = (System.getenv("downloadFiles") ?: "true").equals("true", true)
 
         const val downloadDir = "./download"
         private const val destinationBaseDir = "."
@@ -49,7 +53,8 @@ class Settings {
                 "oid" to "String",
                 "uuid" to "String",
                 "xhtml" to "String",
-                "base64binary" to "String"
+                "base64binary" to "String",
+                "http://hl7.org/fhirpath/system.string" to "String"
         )
 
 

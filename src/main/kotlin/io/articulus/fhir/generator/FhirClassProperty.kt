@@ -47,7 +47,7 @@ class FhirClassProperty(element: FhirStructureDefinitionElement, type: FhirEleme
 
         isSummary = element.isSummary
         referenceToNames =
-                if (type.profile != null) mutableListOf(spec.classNameForProfile(type.profile.asString))
+                if (type.profile != null) type.profile.asJsonArray.map { spec.classNameForProfile(it.asString) }.toMutableList()
                 else mutableListOf()
         representation = element.definition.representation
 

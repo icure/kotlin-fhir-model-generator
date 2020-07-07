@@ -18,11 +18,20 @@ fun main(args: Array<String>) {
         downloadSpec(baseUrl)
     }
     copyExamples()
-    deleteFiles(Settings.destinationSrcDir + "/model")
-    deleteFiles(Settings.destinationTestDir + "/model")
-    val fhirSpec = FhirSpec(Settings.destinationSrcDir, "io.articulus.fhir.model.${Settings.modelVersion}")
+
+    deleteFiles(Settings.destinationSrcDir + "/entities")
+    deleteFiles(Settings.destinationTestDir + "/entities")
+    deleteFiles(Settings.destinationSrcDir + "/dto")
+    deleteFiles(Settings.destinationTestDir + "/dto")
+
+    val fhirSpec = FhirSpec(Settings.destinationSrcDir, "com.taktik.icure.fhir.entities.${Settings.modelVersion}", Settings.topLevelClasses)
     fhirSpec.prepare()
     FhirRenderer(fhirSpec).build()
+
+    val dtoFhirSpec = FhirSpec(Settings.destinationSrcDir, "com.taktik.icure.fhir.dto.${Settings.modelVersion}")
+    dtoFhirSpec.prepare()
+    FhirRenderer(dtoFhirSpec).build()
+
 }
 
 fun downloadSpec(url: URL) {
