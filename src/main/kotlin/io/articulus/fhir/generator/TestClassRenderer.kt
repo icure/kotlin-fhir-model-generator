@@ -370,7 +370,7 @@ class CreateTestMethods(private var spec: FhirSpec, private val rawData: Mutable
         classBuilder.addFunction(FunSpec.builder("stringMatch")
                 .returns(Boolean::class)
                 .addParameter("str", String::class)
-                .addParameter("actual", String::class.asTypeName().asNullable())
+                .addParameter("actual", String::class.asTypeName().isNullable(true))
                 .addStatement("return if (actual.isNullOrBlank()) true else actual.startsWith(str) ")
                 .build()
         )

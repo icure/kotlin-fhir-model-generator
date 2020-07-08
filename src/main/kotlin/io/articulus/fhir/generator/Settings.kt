@@ -1,8 +1,7 @@
 package io.articulus.fhir.generator
 
-class Settings {
-    companion object {
-        val topLevelClasses: List<String> = listOf("Patient")
+object Settings {
+        val topLevelClasses: List<String> = listOf("Patient","Encounter","EpisodeOfCare","CareTeam","Device","Organization","HealthcareService","Practitioner","AllergyIntolerance","AdverseEvent","Condition","Procedure")
         val topLevelMappings: Map<String,String> = mapOf("id" to "_id")
         val topLevelNotNulls: List<String> = listOf("id")
 
@@ -17,9 +16,9 @@ class Settings {
 
         const val downloadDir = "./download"
         private const val destinationBaseDir = "."
-        const val destinationSrcDir = "$destinationBaseDir/src/main/kotlin"
-        const val destinationTestDir = "$destinationBaseDir/src/test/kotlin"
-        const val samplesDir = "$destinationBaseDir/src/test/resources/model/sample_data/$modelVersion"
+        var destinationSrcDir = "$destinationBaseDir/src/main/kotlin"
+        var destinationTestDir = "$destinationBaseDir/src/test/kotlin"
+        var samplesDir = "$destinationBaseDir/src/test/resources/model/sample_data/$modelVersion"
 
         val reservedMap = mapOf(
                 "for" to "for_fhir",
@@ -100,7 +99,5 @@ class Settings {
                         "resourceType" to Pair("String?", "null")
                 )
         )
-
-    }
 }
 

@@ -8,7 +8,7 @@ import java.io.File
 import java.util.*
 
 
-class FhirSpec(val directory: String, val packageName: String, val topLevelClasses:List<String> = listOf()) {
+class FhirSpec(val directory: String, val packageName: String, val topLevelClasses: List<String> = listOf(), val mappersPackageName: String? = null, val dtosPackageName: String? = null) {
     val log by logger()
 
     val gson = Gson()
