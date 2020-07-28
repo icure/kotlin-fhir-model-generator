@@ -25,6 +25,7 @@ fun main(args: Array<String>) {
 
     deleteFiles(Settings.destinationSrcDir + "/org/taktik/icure/fhir/entities")
     deleteFiles(Settings.destinationTestDir + "/org/taktik/icure/services/external/rest/fhir/dto")
+    deleteFiles(Settings.destinationTestDir + "/org/taktik/icure/services/external/rest/fhir/mapper")
 
     val fhirSpec = FhirSpec(Settings.destinationSrcDir, "org.taktik.icure.fhir.entities.${Settings.modelVersion}", Settings.topLevelClasses, "org.taktik.icure.services.external.rest.fhir.mapper.${Settings.modelVersion}", "org.taktik.icure.services.external.rest.fhir.dto.${Settings.modelVersion}")
     fhirSpec.prepare()
@@ -37,8 +38,12 @@ fun main(args: Array<String>) {
 
 fun downloadSpec(url: URL) {
     createDir(Settings.downloadDir)
-    downloadFromUrl(URL(url, "version.info"), "${Settings.downloadDir}/version.info")
-    downloadFromUrl(URL(url, "examples-json.zip"), "${Settings.downloadDir}/examples-json.zip")
+    try { downloadFromUrl(URL(url, "version.info"), "${Settings.downloadDir}/version.info") } catch (e:Exception) { /* ignpre */ }
+    try {
+        downloadFromUrl(URL(url, "examples-json.zip"), "${Settings.downloadDir}/examples-json.zip")
+    } catch (e:Exception) {
+        downloadFromUrl(URL(url, "examples.json.zip"), "${Settings.downloadDir}/examples-json.zip")
+    }
     unzip("${Settings.downloadDir}/examples-json.zip", "${Settings.downloadDir}/")
 }
 

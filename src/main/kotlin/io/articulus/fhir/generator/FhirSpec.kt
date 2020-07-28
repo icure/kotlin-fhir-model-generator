@@ -24,11 +24,11 @@ class FhirSpec(val directory: String, val packageName: String, val topLevelClass
     }
 
 
-    private fun readBundleResources(f: String): List<JsonElement> {
+    private fun readBundleResources(f: File): List<JsonElement> {
         val parser = JsonParser()
         val resources: MutableList<JsonElement> = mutableListOf()
 
-        val json = parser.parse(File("${Settings.downloadDir}/$f").readTextAndClose()).asJsonObject
+        val json = parser.parse(f.readTextAndClose()).asJsonObject
 
         if (!json.has("resourceType")) {
             InvalidPropertiesFormatException("No resourceType in $f")
@@ -54,9 +54,19 @@ class FhirSpec(val directory: String, val packageName: String, val topLevelClass
         val resources: MutableList<JsonElement> = mutableListOf()
 
         arrayOf("profiles-types.json", "profiles-resources.json").forEach { f ->
-            readBundleResources(f).forEach { res ->
+            val file = File("${Settings.downloadDir}/$f")
+            if (file.exists()) readBundleResources(file).forEach { res ->
                 if (res.asJsonObject.get("resourceType").asString == "StructureDefinition") {
                     resources.add(res)
+                }
+            }
+        }
+        File("${Settings.downloadDir}").listFiles()?.forEach {
+            if(it.name.contains("StructureDefinition")) {
+                val parser = JsonParser()
+                val json = parser.parse(it.readTextAndClose()).asJsonObject
+                if (json.get("resourceType").asString == "StructureDefinition") {
+                    resources.add(json)
                 }
             }
         }

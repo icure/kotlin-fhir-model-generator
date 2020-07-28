@@ -9,8 +9,10 @@ object Settings {
          * http://hl7.org/fhir is the latest release. To generate other versions go to
          * http://hl7.org/fhir/directory.html and select which version to use.
          */
-        const val baseUrl = "http://hl7.org/fhir/"
-        const val modelVersion = "r4"
+        //const val baseUrl = "http://hl7.org/fhir/"
+        const val baseUrl = "http://standardhealthrecord.org/guides/obf/"
+        //const val modelVersion = "r4"
+        const val modelVersion = "obf"
 
         val downloadFiles = (System.getenv("downloadFiles") ?: "true").equals("true", true)
 
@@ -19,6 +21,8 @@ object Settings {
         var destinationSrcDir = "$destinationBaseDir/src/main/kotlin"
         var destinationTestDir = "$destinationBaseDir/src/test/kotlin"
         var samplesDir = "$destinationBaseDir/src/test/resources/model/sample_data/$modelVersion"
+
+        val blackList = listOf("ObservationComponentReferenceRange")
 
         val reservedMap = mapOf(
                 "for" to "for_fhir",
@@ -94,10 +98,10 @@ object Settings {
                 "FhirDate" to "FhirDate.now()"
         )
 
-        val manualClasses = mapOf(
-                "FhirAbstractResource" to mapOf(
+        val manualClasses = mapOf<String, Map<String, Pair<String, String>>>(
+                /*"FhirAbstractResource" to mapOf(
                         "resourceType" to Pair("String?", "null")
-                )
+                )*/
         )
 }
 

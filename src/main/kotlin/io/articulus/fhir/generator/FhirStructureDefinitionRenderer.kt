@@ -45,7 +45,7 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
 
             val header = buildHeader(data)
 
-            classes.filter { c -> !Settings.natives.contains(c.name) }.forEach { c ->
+            classes.filter { c -> !Settings.natives.contains(c.name) && !Settings.blackList.contains(c.name) }.forEach { c ->
                 val packageName = packages[c.name] ?: spec.packageName
                 val out = FileSpec.builder(packageName, c.name)
                 out.addComment(header)
@@ -169,7 +169,7 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
         val isTopLevel = topLevelClasses.contains(cls.name)
 
         val types = hierarchy.flatMap { it.properties.values.mapNotNull { mappedTypes(it, packages).second.let {
-            if (it.packageName.startsWith(spec.packageName) && !superClasses.any { sc -> sc.name == it.simpleName}) ClassName(it.packageName.replace(spec.packageName, spec.mappersPackageName!!), it.simpleName + "Mapper") else null
+            if (it.packageName.startsWith(spec.packageName) && it.simpleName != cls.name && !superClasses.any { sc -> sc.name == it.simpleName}) ClassName(it.packageName.replace(spec.packageName, spec.mappersPackageName!!), it.simpleName + "Mapper") else null
         } } }.toSortedSet()
         val classBuilder = TypeSpec.interfaceBuilder(cls.name + "Mapper").addAnnotation(
                 AnnotationSpec.builder(ClassName("org.mapstruct","Mapper"))
