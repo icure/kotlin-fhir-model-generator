@@ -1,18 +1,18 @@
 package io.articulus.fhir.generator
 
 object Settings {
-        val topLevelClasses: List<String> = listOf("Patient","Encounter","EpisodeOfCare","CareTeam","Device","Organization","HealthcareService","Practitioner","AllergyIntolerance","AdverseEvent","Condition","Procedure")
-        val topLevelMappings: Map<String,String> = mapOf("id" to "_id")
-        val topLevelNotNulls: List<String> = listOf("id")
+        val topLevelClasses: List<String> = listOf() //"Patient","Encounter","EpisodeOfCare","CareTeam","Device","Organization","HealthcareService","Practitioner","AllergyIntolerance","AdverseEvent","Condition","Procedure")
+        val topLevelMappings: Map<String,String> = mapOf() //"id" to "_id")
+        val topLevelNotNulls: List<String> = listOf() //"id")
 
         /**
          * http://hl7.org/fhir is the latest release. To generate other versions go to
          * http://hl7.org/fhir/directory.html and select which version to use.
          */
-        //const val baseUrl = "http://hl7.org/fhir/"
-        const val baseUrl = "http://standardhealthrecord.org/guides/obf/"
-        //const val modelVersion = "r4"
-        const val modelVersion = "obf"
+        const val baseUrl = "http://hl7.org/fhir/"
+        //const val baseUrl = "http://standardhealthrecord.org/guides/obf/"
+        const val modelVersion = "r4"
+        //const val modelVersion = "obf"
 
         val downloadFiles = (System.getenv("downloadFiles") ?: "true").equals("true", true)
 

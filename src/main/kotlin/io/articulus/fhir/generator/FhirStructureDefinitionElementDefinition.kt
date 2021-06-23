@@ -73,7 +73,7 @@ class FhirStructureDefinitionElementDefinition(val element: FhirStructureDefinit
         if (parentName != null) { // && and self.element.profile.spec.settings.backbone_class_adds_parent:
             className = parentName + className
         }
-        return className!!
+        return className!!.replace("[x]","")
 
     }
 }

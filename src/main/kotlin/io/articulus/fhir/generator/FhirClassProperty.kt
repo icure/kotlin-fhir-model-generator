@@ -33,6 +33,9 @@ class FhirClassProperty(element: FhirStructureDefinitionElement, type: FhirEleme
         if (n.contains("[x]")) {
             oneOfMany = n.replace("[x]", "")
             n = oneOfMany + this.typeName.capitalize()
+            while (n.contains("[x]")) {
+                n = n.replace("[x]", "")
+            }
         } else {
             oneOfMany = null
         }

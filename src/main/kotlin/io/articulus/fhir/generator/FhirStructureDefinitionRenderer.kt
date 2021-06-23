@@ -49,7 +49,7 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
                 val packageName = packages[c.name] ?: spec.packageName
                 val out = FileSpec.builder(packageName, c.name)
                 out.addComment(header)
-                val classBody = if (superClasses.contains(c)) buildInterface(c, packages) else buildClass(c, packages, spec.topLevelClasses)
+                val classBody = if (superClasses.contains(c)) buildInterface(c, packages, spec.makeReadonlyProperties) else buildClass(c, packages, spec.topLevelClasses, spec.makeReadonlyProperties)
                 out.addType(classBody)
                 log.debug("Building class {}", c.name)
                 val dir = spec.info.directory
@@ -60,7 +60,7 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
                     out.addComment(header)
                     val mapperBody = buildMapper(c, packages, packageName, packageName.replace(spec.packageName, spec.dtosPackageName), spec.topLevelClasses, superClasses)
                     mapperOut.addType(mapperBody)
-                    log.debug("Building mapper {}Mapper", c.name)
+                    log.debug("Building mapper {} Mapper", c.name)
                     val dir = spec.info.directory
                     mapperOut.build().writeTo(File(dir))
                 }
@@ -86,7 +86,7 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
         }
     }
 
-    private fun buildInterface(cls: FhirClass, packages: Map<String, String> = mapOf()): TypeSpec {
+    private fun buildInterface(cls: FhirClass, packages: Map<String, String> = mapOf(), makeReadonlyProperties: Boolean = true): TypeSpec {
         val classBuilder = TypeSpec.interfaceBuilder(cls.name)
 
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
@@ -99,7 +99,7 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
         return classBuilder.build()
     }
 
-    private fun buildClass(cls: FhirClass, packages: Map<String, String> = mapOf(), topLevelClasses: List<String> = listOf()): TypeSpec {
+    private fun buildClass(cls: FhirClass, packages: Map<String, String> = mapOf(), topLevelClasses: List<String> = listOf(), makeReadonlyProperties: Boolean = true): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(cls.name).addModifiers(KModifier.DATA)
 
         val hierarchy = mutableListOf(cls)
@@ -152,7 +152,7 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
         cls.superClass?.let { classBuilder.addSuperinterface(ClassName(packages[it.name] ?: spec.packageName, it.name)) }
         classBuilder.addAnnotation(AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation","JsonInclude")).addMember("JsonInclude.Include.NON_NULL").build())
         classBuilder.addAnnotation(AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation","JsonIgnoreProperties")).addMember("ignoreUnknown = true").build())
-        classBuilder.addAnnotation(AnnotationSpec.builder(ClassName("com.github.pozo","KotlinBuilder")).build())
+        if (makeReadonlyProperties) classBuilder.addAnnotation(AnnotationSpec.builder(ClassName("com.github.pozo","KotlinBuilder")).build())
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
         classBuilder.primaryConstructor(primaryCtor.build())
 
