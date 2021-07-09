@@ -19,7 +19,7 @@ import com.squareup.kotlinpoet.asTypeName
 import java.io.File
 
 
-class TestClassRenderer(val spec: FhirSpec) {
+class TestClassRenderer(private val spec: FhirSpec) {
     private val c = mutableMapOf<FhirClass, MutableList<Pair<String, JsonObject>>>()
     private val classes = mutableListOf<Triple<FhirClass, String, JsonObject>>()
 
@@ -232,7 +232,7 @@ class CreateTestMethods(private var spec: FhirSpec, private val rawData: Mutable
         val suppress = ClassName("java.lang", "SuppressWarnings")
 
         val bundleClassName = ClassName(MODEL_PACKAGE, "Bundle")
-        rawData.forEach { fhirClass, dataList ->
+        rawData.forEach { (fhirClass, dataList) ->
             currentClass = fhirClass
             className = ClassName(MODEL_PACKAGE, fhirClass.name)
             createClassFile(fhirClass)
@@ -245,7 +245,7 @@ class CreateTestMethods(private var spec: FhirSpec, private val rawData: Mutable
                                         AnnotationSpec.builder(suppress).addMember("\"unused\"").build())
                                 .build()
                         )
-                fValSpec.addStatement("obj.identifier  // No-Op to suprress unused warnings")
+                fValSpec.addStatement("obj.identifier  // No-Op to suppress unused warnings")
 
                 val values = testValues.getTestValues(jsonObject, fhirClass)
                 createTestFun()

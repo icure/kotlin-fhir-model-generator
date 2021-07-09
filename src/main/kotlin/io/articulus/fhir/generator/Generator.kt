@@ -23,17 +23,11 @@ fun main(args: Array<String>) {
     }
     copyExamples()
 
-    deleteFiles(Settings.destinationSrcDir + "/org/taktik/icure/fhir/entities")
-    deleteFiles(Settings.destinationTestDir + "/org/taktik/icure/services/external/rest/fhir/dto")
-    deleteFiles(Settings.destinationTestDir + "/org/taktik/icure/services/external/rest/fhir/mapper")
+    deleteFiles(Settings.destinationSrcDir + "/org/taktik/icure/fhir/entities/${Settings.modelVersion}")
 
-    val fhirSpec = FhirSpec(Settings.destinationSrcDir, "org.taktik.icure.fhir.entities.${Settings.modelVersion}", Settings.topLevelClasses, "org.taktik.icure.services.external.rest.fhir.mapper.${Settings.modelVersion}", "org.taktik.icure.services.external.rest.fhir.dto.${Settings.modelVersion}")
+    val fhirSpec = FhirSpec(Settings.destinationSrcDir, "org.taktik.icure.fhir.entities.${Settings.modelVersion}", Settings.topLevelClasses)
     fhirSpec.prepare()
     FhirRenderer(fhirSpec).build()
-
-    val dtoFhirSpec = FhirSpec(Settings.destinationSrcDir, "org.taktik.icure.services.external.rest.fhir.dto.${Settings.modelVersion}")
-    dtoFhirSpec.prepare()
-    FhirRenderer(dtoFhirSpec).build()
 }
 
 fun downloadSpec(url: URL) {

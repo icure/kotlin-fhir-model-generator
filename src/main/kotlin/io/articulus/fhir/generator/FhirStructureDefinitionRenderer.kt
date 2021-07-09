@@ -16,9 +16,9 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import java.io.File
 
-class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
+class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
-    val log by logger()
+    private val log by logger()
 
     fun render() {
         renderManualClasses()
@@ -54,26 +54,16 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
                 log.debug("Building class {}", c.name)
                 val dir = spec.info.directory
                 out.build().writeTo(File(dir))
-
-                if (spec.mappersPackageName != null && spec.dtosPackageName != null && !superClasses.contains(c)) {
-                    val mapperOut = FileSpec.builder(packageName.replace(spec.packageName, spec.mappersPackageName), c.name + "Mapper")
-                    out.addComment(header)
-                    val mapperBody = buildMapper(c, packages, packageName, packageName.replace(spec.packageName, spec.dtosPackageName), spec.topLevelClasses, superClasses)
-                    mapperOut.addType(mapperBody)
-                    log.debug("Building mapper {} Mapper", c.name)
-                    val dir = spec.info.directory
-                    mapperOut.build().writeTo(File(dir))
-                }
             }
         }
     }
 
     private fun renderManualClasses() {
-        Settings.manualClasses.forEach { name, props ->
+        Settings.manualClasses.forEach { (name, props) ->
             val out = FileSpec.builder(spec.packageName, name)
             val classBuilder = TypeSpec.classBuilder(name).addModifiers(KModifier.OPEN)
 
-            props.forEach { propName, typeInfo ->
+            props.forEach { (propName, typeInfo) ->
                 val className = ClassName(spec.packageName, typeInfo.first)
                 val propBuilder = PropertySpec.builder(propName, className).mutable(true)
                 if (typeInfo.second.isNotBlank()) {
@@ -155,41 +145,6 @@ class FhirStructureDefinitionRenderer(val spec: FhirSpec) {
         if (makeReadonlyProperties) classBuilder.addAnnotation(AnnotationSpec.builder(ClassName("com.github.pozo","KotlinBuilder")).build())
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
         classBuilder.primaryConstructor(primaryCtor.build())
-
-        return classBuilder.build()
-    }
-
-    private fun buildMapper(cls: FhirClass, packages: Map<String, String> = mapOf(), entityPackage: String, dtoPackage: String, topLevelClasses: List<String> = listOf(), superClasses: List<FhirClass>): TypeSpec {
-        val hierarchy = mutableListOf(cls)
-        var marker = cls
-        while(marker.superClass != null) {
-            hierarchy.add(0, marker.superClass!!)
-            marker = marker.superClass!!
-        }
-        val isTopLevel = topLevelClasses.contains(cls.name)
-
-        val types = hierarchy.flatMap { it.properties.values.mapNotNull { mappedTypes(it, packages).second.let {
-            if (it.packageName.startsWith(spec.packageName) && it.simpleName != cls.name && !superClasses.any { sc -> sc.name == it.simpleName}) ClassName(it.packageName.replace(spec.packageName, spec.mappersPackageName!!), it.simpleName + "Mapper") else null
-        } } }.toSortedSet()
-        val classBuilder = TypeSpec.interfaceBuilder(cls.name + "Mapper").addAnnotation(
-                AnnotationSpec.builder(ClassName("org.mapstruct","Mapper"))
-                        .addMember("componentModel = %S", "spring")
-                        .addMember("uses = [${types.map {"%T::class"}.joinToString(", ")}]", *types.toTypedArray())
-                        .addMember("injectionStrategy = %M", MemberName(ClassName("org.mapstruct","InjectionStrategy"), "CONSTRUCTOR"))
-                        .build())
-                .addFunction(FunSpec.builder("map").addModifiers(KModifier.ABSTRACT).addParameter(cls.name.decapitalize(), ClassName(dtoPackage, cls.name)).let {
-                    if(isTopLevel)
-                        it.addAnnotation(
-                                AnnotationSpec.builder(ClassName("org.mapstruct","Mappings"))
-                                        .addMember("%L", AnnotationSpec.builder(ClassName("org.mapstruct","Mapping")).addMember("target = %S", "attachments").addMember("ignore = %L", true).build())
-                                        .addMember("%L", AnnotationSpec.builder(ClassName("org.mapstruct","Mapping")).addMember("target = %S", "revHistory").addMember("ignore = %L", true).build())
-                                        .addMember("%L", AnnotationSpec.builder(ClassName("org.mapstruct","Mapping")).addMember("target = %S", "conflicts").addMember("ignore = %L", true).build())
-                                        .addMember("%L", AnnotationSpec.builder(ClassName("org.mapstruct","Mapping")).addMember("target = %S", "revisionsInfo").addMember("ignore = %L", true).build())
-                                        .build()
-                        )
-                    else it
-                }.returns(ClassName(entityPackage, cls.name)).build())
-                .addFunction(FunSpec.builder("map").addModifiers(KModifier.ABSTRACT).addParameter(cls.name.decapitalize(), ClassName(entityPackage, cls.name)).returns(ClassName(dtoPackage, cls.name)).build())
 
         return classBuilder.build()
     }

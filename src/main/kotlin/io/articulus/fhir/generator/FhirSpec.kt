@@ -8,12 +8,12 @@ import java.io.File
 import java.util.*
 
 
-class FhirSpec(val directory: String, val packageName: String, val topLevelClasses: List<String> = listOf(), val mappersPackageName: String? = null, val dtosPackageName: String? = null, val makeReadonlyProperties: Boolean = true) {
+class FhirSpec(directory: String, val packageName: String, val topLevelClasses: List<String> = listOf(), val makeReadonlyProperties: Boolean = true) {
     val log by logger()
 
     val gson = Gson()
 
-    val profiles: MutableMap<String, FhirStructureDefinition> = HashMap()
+    private val profiles: MutableMap<String, FhirStructureDefinition> = HashMap()
     val info: FhirVersionInfo = FhirVersionInfo(this, directory)
 
     fun prepare() {
@@ -61,7 +61,7 @@ class FhirSpec(val directory: String, val packageName: String, val topLevelClass
                 }
             }
         }
-        File("${Settings.downloadDir}").listFiles()?.forEach {
+        File(Settings.downloadDir).listFiles()?.forEach {
             if(it.name.contains("StructureDefinition")) {
                 val parser = JsonParser()
                 val json = parser.parse(it.readTextAndClose()).asJsonObject
@@ -123,11 +123,11 @@ class FhirSpec(val directory: String, val packageName: String, val topLevelClass
     }
 
 
-    fun asClassName(className: String, parentName: String?): String? {
+    private fun asClassName(className: String, parentName: String?): String? {
         if (className.isEmpty()) {
             return null
         }
-        val pathName = if (parentName != null) parentName + "." + className else null
+        val pathName = if (parentName != null) "$parentName.$className" else null
 
         if (pathName != null && Settings.classMap.containsKey(pathName.toLowerCase())) {
             return Settings.classMap[pathName.toLowerCase()]
