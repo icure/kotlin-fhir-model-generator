@@ -99,38 +99,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
             marker = marker.superClass!!
         }
         val primaryCtor = FunSpec.constructorBuilder()
-
-        val ann = ClassName("com.fasterxml.jackson.annotation", "JsonProperty")
-
         val isTopLevel = topLevelClasses.contains(cls.name)
-        if (isTopLevel) {
-            primaryCtor.addParameter(ParameterSpec.builder("rev", String::class.asClassName().isNullable(true)).defaultValue("null").build())
-            classBuilder.addProperty(PropertySpec.builder("rev", String::class.asClassName().isNullable(true)).addModifiers(KModifier.OVERRIDE).initializer("rev").addAnnotation(AnnotationSpec.builder(ann).addMember("\"_rev\"").build()).build())
-
-            primaryCtor.addParameter(ParameterSpec.builder("deletionDate", Long::class.asClassName().isNullable(true)).defaultValue("null").build())
-            classBuilder.addProperty(PropertySpec.builder("deletionDate", Long::class.asClassName().isNullable(true)).addModifiers(KModifier.OVERRIDE).initializer("deletionDate").addAnnotation(AnnotationSpec.builder(ann).addMember("\"deleted\"").build()).build())
-
-            val mapStringAttachment = Map::class.asClassName().parameterizedBy(String::class.asTypeName(), ClassName("org.ektorp", "Attachment")).isNullable(true)
-            primaryCtor.addParameter(ParameterSpec.builder("attachments", mapStringAttachment).defaultValue("null").build())
-            classBuilder.addProperty(PropertySpec.builder("attachments", mapStringAttachment).addModifiers(KModifier.OVERRIDE).initializer("attachments").addAnnotation(AnnotationSpec.builder(ann).addMember("\"_attachments\"").build()).build())
-
-            val listRevInfo = List::class.asClassName().parameterizedBy(ClassName("org.taktik.icure.entities.embed", "RevisionInfo")).isNullable(true)
-            primaryCtor.addParameter(ParameterSpec.builder("revisionsInfo", listRevInfo).defaultValue("null").build())
-            classBuilder.addProperty(PropertySpec.builder("revisionsInfo", listRevInfo).addModifiers(KModifier.OVERRIDE).initializer("revisionsInfo").addAnnotation(AnnotationSpec.builder(ann).addMember("\"_revs_info\"").build()).build())
-
-            val listString = List::class.asClassName().parameterizedBy(String::class.asTypeName()).isNullable(true)
-            primaryCtor.addParameter(ParameterSpec.builder("conflicts", listString).defaultValue("null").build())
-            classBuilder.addProperty(PropertySpec.builder("conflicts", listString).addModifiers(KModifier.OVERRIDE).initializer("conflicts").addAnnotation(AnnotationSpec.builder(ann).addMember("\"_conflicts\"").build()).build())
-
-            val mapStringString = Map::class.asClassName().parameterizedBy(String::class.asTypeName(), String::class.asTypeName()).isNullable(true)
-            primaryCtor.addParameter(ParameterSpec.builder("revHistory", mapStringString).defaultValue("null").build())
-            classBuilder.addProperty(PropertySpec.builder("revHistory", mapStringString).addModifiers(KModifier.OVERRIDE).initializer("revHistory").addAnnotation(AnnotationSpec.builder(ann).addMember("\"rev_history\"").build()).build())
-
-            classBuilder.addSuperinterface(ClassName("org.taktik.icure.entities.base", "StoredDocument"))
-
-            classBuilder.addFunction(FunSpec.builder("withIdRev").addModifiers(KModifier.OVERRIDE).returns(ClassName(packages[cls.name] ?: spec.packageName, cls.name)).addParameter("id", String::class.asClassName().isNullable(true)).addParameter("rev", String::class.asClassName()).addStatement("return if (id != null) this.copy(id = id, rev = rev) else this.copy(rev = rev)").build())
-            classBuilder.addFunction(FunSpec.builder("withDeletionDate").addModifiers(KModifier.OVERRIDE).returns(ClassName(packages[cls.name] ?: spec.packageName, cls.name)).addParameter("deletionDate", Long::class.asClassName().isNullable(true)).addStatement("return this.copy(deletionDate = deletionDate)").build())
-        }
 
         hierarchy.flatMap { it.properties.entries.map { it.key to it.value} }.toMap().toSortedMap().forEach { (_, prop) ->
             val forceNotNull = if (isTopLevel) Settings.topLevelNotNulls.contains(prop.name) else false
