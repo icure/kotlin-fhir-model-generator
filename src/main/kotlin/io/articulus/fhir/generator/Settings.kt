@@ -40,6 +40,7 @@ object Settings {
                 "Practitioner.role" to "PractRole",  // to avoid Practitioner.role and PractitionerRole generating the same class
                 "bool" to "Boolean",
                 "integer" to "Int",
+                "integer64" to "Int",
                 "positiveint" to "Int",
                 "unsignedint" to "Int",
                 "date" to "String",

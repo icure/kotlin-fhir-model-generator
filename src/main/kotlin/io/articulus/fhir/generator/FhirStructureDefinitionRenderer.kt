@@ -25,36 +25,43 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
         val allClasses = spec.writeableProfile().flatMap { it.writeableClasses() }
         val superClasses = allClasses.filter { c -> allClasses.any { it.superClass == c } }
-        val packages = spec.writeableProfile().flatMap { p -> p.writeableClasses().map { c -> c.name to spec.packageName+"."+p.targetName.toLowerCase() } }.toMap() +
+        val packages = spec.writeableProfile().flatMap { p ->
+            p.writeableClasses().map { c -> c.name to spec.packageName + "." + p.targetName.toLowerCase() }
+        }.toMap() +
                 Settings.primitives.map { it to "kotlin" } +
                 mapOf(
-                        "Resource" to spec.packageName,
-                        "DomainResource" to spec.packageName,
-                        "Element" to spec.packageName,
-                        "Quantity" to spec.packageName,
-                        "Meta" to spec.packageName
+                    "Resource" to spec.packageName,
+                    "DomainResource" to spec.packageName,
+                    "Element" to spec.packageName,
+                    "Quantity" to spec.packageName,
+                    "Meta" to spec.packageName
                 )
 
         spec.writeableProfile().forEach { profile ->
             val classes = profile.writeableClasses()
             val data = hashMapOf(
-                    "profile" to profile,
-                    "info" to spec.info,
-                    "classes" to classes
+                "profile" to profile,
+                "info" to spec.info,
+                "classes" to classes
             )
 
             val header = buildHeader(data)
 
-            classes.filter { c -> !Settings.natives.contains(c.name) && !Settings.blackList.contains(c.name) }.forEach { c ->
-                val packageName = packages[c.name] ?: spec.packageName
-                val out = FileSpec.builder(packageName, c.name)
-                out.addComment(header)
-                val classBody = if (superClasses.contains(c)) buildInterface(c, packages, spec.makeReadonlyProperties) else buildClass(c, packages, spec.topLevelClasses, spec.makeReadonlyProperties)
-                out.addType(classBody)
-                log.debug("Building class {}", c.name)
-                val dir = spec.info.directory
-                out.build().writeTo(File(dir))
-            }
+            classes.filter { c -> !Settings.natives.contains(c.name) && !Settings.blackList.contains(c.name) }
+                .forEach { c ->
+                    val packageName = packages[c.name] ?: spec.packageName
+                    val out = FileSpec.builder(packageName, c.name)
+                    out.addFileComment(header)
+                    val classBody = if (superClasses.contains(c)) buildInterface(
+                        c,
+                        packages,
+                        spec.makeReadonlyProperties
+                    ) else buildClass(c, packages, spec.topLevelClasses, spec.makeReadonlyProperties)
+                    out.addType(classBody)
+                    log.debug("Building class {}", c.name)
+                    val dir = spec.info.directory
+                    out.build().writeTo(File(dir))
+                }
         }
     }
 
@@ -76,7 +83,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         }
     }
 
-    private fun buildInterface(cls: FhirClass, packages: Map<String, String> = mapOf(), makeReadonlyProperties: Boolean = true): TypeSpec {
+    private fun buildInterface(
+        cls: FhirClass,
+        packages: Map<String, String> = mapOf(),
+        makeReadonlyProperties: Boolean = true
+    ): TypeSpec {
         val classBuilder = TypeSpec.interfaceBuilder(cls.name)
 
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
@@ -84,41 +95,105 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         cls.properties.toSortedMap().forEach { (_, prop) ->
             classBuilder.addProperty(makeProperty(prop, packages, true, false))
         }
-        cls.superClass?.let {  classBuilder.addSuperinterface(ClassName(packages[it.name] ?: spec.packageName, it.name)) }
+        cls.superClass?.let {
+            classBuilder.addSuperinterface(
+                ClassName(
+                    packages[it.name] ?: spec.packageName,
+                    it.name
+                )
+            )
+        }
 
         return classBuilder.build()
     }
 
-    private fun buildClass(cls: FhirClass, packages: Map<String, String> = mapOf(), topLevelClasses: List<String> = listOf(), makeReadonlyProperties: Boolean = true): TypeSpec {
+    private fun buildClass(
+        cls: FhirClass,
+        packages: Map<String, String> = mapOf(),
+        topLevelClasses: List<String> = listOf(),
+        makeReadonlyProperties: Boolean = true
+    ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(cls.name).addModifiers(KModifier.DATA)
 
         val hierarchy = mutableListOf(cls)
         var marker = cls
-        while(marker.superClass != null) {
+        while (marker.superClass != null) {
             hierarchy.add(0, marker.superClass!!)
             marker = marker.superClass!!
         }
         val primaryCtor = FunSpec.constructorBuilder()
         val isTopLevel = topLevelClasses.contains(cls.name)
 
-        hierarchy.flatMap { it.properties.entries.map { it.key to it.value} }.toMap().toSortedMap().forEach { (_, prop) ->
+        val properties = hierarchy.flatMap { it.properties.entries.map { it.key to it.value } }
+
+        properties.forEach { (_, prop) ->
             val forceNotNull = if (isTopLevel) Settings.topLevelNotNulls.contains(prop.name) else false
             primaryCtor.addParameter(makePropertyParameter(prop, packages, forceNotNull = forceNotNull))
-            val overriden = hierarchy.filterIndexed { idx, _ -> idx < hierarchy.size - 1 }.any { it.properties.any { (_, it) -> it.name == prop.name } }
-            classBuilder.addProperty(makeProperty(prop, packages, false, jsonName = if (isTopLevel) Settings.topLevelMappings[prop.name] else null, forceNotNull = forceNotNull, isInConstructor = true, isOverriden = overriden))
+            val overriden = hierarchy.filterIndexed { idx, _ -> idx < hierarchy.size - 1 }
+                .any { it.properties.any { (_, it) -> it.name == prop.name } }
+            classBuilder.addProperty(
+                makeProperty(
+                    prop,
+                    packages,
+                    false,
+                    jsonName = if (isTopLevel) Settings.topLevelMappings[prop.name] else null,
+                    forceNotNull = forceNotNull,
+                    isInConstructor = true,
+                    isOverriden = overriden
+                )
+            )
         }
 
-        cls.superClass?.let { classBuilder.addSuperinterface(ClassName(packages[it.name] ?: spec.packageName, it.name)) }
-        classBuilder.addAnnotation(AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation","JsonInclude")).addMember("JsonInclude.Include.NON_NULL").build())
-        classBuilder.addAnnotation(AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation","JsonIgnoreProperties")).addMember("ignoreUnknown = true").build())
-        if (makeReadonlyProperties) classBuilder.addAnnotation(AnnotationSpec.builder(ClassName("com.github.pozo","KotlinBuilder")).build())
+        cls.superClass?.let {
+            classBuilder.addSuperinterface(
+                ClassName(
+                    packages[it.name] ?: spec.packageName,
+                    it.name
+                )
+            )
+        }
+        classBuilder.addAnnotation(
+            AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation", "JsonInclude"))
+                .addMember("JsonInclude.Include.NON_NULL").build()
+        )
+        classBuilder.addAnnotation(
+            AnnotationSpec.builder(
+                ClassName(
+                    "com.fasterxml.jackson.annotation",
+                    "JsonIgnoreProperties"
+                )
+            ).addMember("ignoreUnknown = true").build()
+        )
+        classBuilder.addAnnotation(
+            AnnotationSpec.builder(
+                ClassName(
+                    "com.fasterxml.jackson.databind.annotation",
+                    "JsonDeserialize"
+                )
+            ).addMember("using = %T.None::class", ClassName("com.fasterxml.jackson.databind", "JsonDeserializer"))
+                .build()
+        )
+        classBuilder.addAnnotation(
+            AnnotationSpec.builder(
+                ClassName(
+                    "com.fasterxml.jackson.annotation",
+                    "JsonPropertyOrder"
+                )
+            ).also {
+                properties.forEach { (propName, _) -> it.addMember("%S", propName) }
+            }.build()
+        )
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
         classBuilder.primaryConstructor(primaryCtor.build())
 
         return classBuilder.build()
     }
 
-    private fun makePropertyParameter(prop: FhirClassProperty, packages: Map<String, String> = mapOf(), forceNotNull: Boolean = false): ParameterSpec {
+    private fun makePropertyParameter(
+        prop: FhirClassProperty,
+        packages: Map<String, String> = mapOf(),
+        forceNotNull: Boolean = false
+    ): ParameterSpec {
         val (mappedTypeName, typeClassName) = mappedTypes(prop, packages)
 
         val propName = Settings.reservedMap[prop.origName] ?: prop.origName // todo origName?
@@ -130,7 +205,8 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
             parameterSpec.build()
         } else {
-            val parameterSpec = ParameterSpec.builder(propName, typeClassName.isNullable(prop.min == 0 && !forceNotNull))
+            val parameterSpec =
+                ParameterSpec.builder(propName, typeClassName.isNullable(prop.min == 0 && !forceNotNull))
 
             if (prop.min == 0 && !forceNotNull) {
                 parameterSpec.defaultValue("null")
@@ -153,7 +229,15 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         return Pair(mappedTypeName, typeClassName)
     }
 
-    private fun makeProperty(prop: FhirClassProperty, packages: Map<String, String> = mapOf(), isInterface: Boolean, isInConstructor: Boolean, isOverriden: Boolean = false, jsonName: String? = null, forceNotNull: Boolean = false): PropertySpec {
+    private fun makeProperty(
+        prop: FhirClassProperty,
+        packages: Map<String, String> = mapOf(),
+        isInterface: Boolean,
+        isInConstructor: Boolean,
+        isOverriden: Boolean = false,
+        jsonName: String? = null,
+        forceNotNull: Boolean = false
+    ): PropertySpec {
         val (mappedTypeName, typeClassName) = mappedTypes(prop, packages)
 
         val propName = Settings.reservedMap[prop.origName] ?: prop.origName // todo origName?
@@ -161,9 +245,30 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         return if (prop.isList()) {
             val arrayList = ClassName("kotlin.collections", "List")
             val listOfProps = arrayList.parameterizedBy(typeClassName)
-            PropertySpec.builder(propName, listOfProps).let { if (isInConstructor) it.initializer(propName) else if (isInterface) it else it.initializer(CodeBlock.of("listOf<%T>()", typeClassName))}
+            PropertySpec.builder(propName, listOfProps).let {
+                if (!isInterface) {
+                    it.addAnnotation(
+                        AnnotationSpec.builder(
+                            ClassName(
+                                "com.fasterxml.jackson.dataformat.xml.annotation",
+                                "JacksonXmlElementWrapper"
+                            )
+                        )
+                            .useSiteTarget(AnnotationSpec.UseSiteTarget.FIELD)
+                            .addMember("useWrapping = false").build()
+                    )
+                } else it
+            }.let {
+                if (isInConstructor) it.initializer(propName) else if (isInterface) it else it.initializer(
+                    CodeBlock.of(
+                        "listOf<%T>()",
+                        typeClassName
+                    )
+                )
+            }
         } else {
-            PropertySpec.builder(propName, typeClassName.isNullable(prop.min == 0 && !forceNotNull)).addKdoc("%L\n", prop.shortDesc).let {
+            PropertySpec.builder(propName, typeClassName.isNullable(prop.min == 0 && !forceNotNull))
+                .addKdoc("%L\n", prop.shortDesc).let {
                 if (isInConstructor) it.initializer(propName) else if (isInterface) it else {
                     if (prop.min == 0) {
                         it.initializer("null")
@@ -175,16 +280,20 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 }
             }
         }.let { if (isInterface) it else addSerializedNameAnnotation(propName, jsonName ?: prop.origName, it) }.let {
-            if(isOverriden) it.addModifiers(KModifier.OVERRIDE) else it
+            if (isOverriden) it.addModifiers(KModifier.OVERRIDE) else it
         }.build()
     }
 
-    private fun addSerializedNameAnnotation(propName: String, origName: String, propertySpec: PropertySpec.Builder): PropertySpec.Builder {
+    private fun addSerializedNameAnnotation(
+        propName: String,
+        origName: String,
+        propertySpec: PropertySpec.Builder
+    ): PropertySpec.Builder {
         return if (propName != origName) {
             val foo = ClassName("com.fasterxml.jackson.annotation", "JsonProperty")
             propertySpec.addAnnotation(
-                    AnnotationSpec.builder(foo).addMember("\"${origName}\"")
-                            .build()
+                AnnotationSpec.builder(foo).addMember("\"${origName}\"")
+                    .build()
             )
         } else propertySpec
     }
