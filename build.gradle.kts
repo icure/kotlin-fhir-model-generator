@@ -29,11 +29,17 @@ repositories {
     }
 }
 
+tasks.register<Jar>("api-jar") {
+    from("gen/src/main/kotlin")
+    from(sourceSets.main.get().output.classesDirs)
+}
+
 publishing {
     publications {
         create<MavenPublication>("kotlin-fhir-model-generator") {
             artifactId = "kotlin-fhir-model-generator"
             from(components["java"])
+            artifact(tasks.getByName("api-jar"))
         }
     }
 

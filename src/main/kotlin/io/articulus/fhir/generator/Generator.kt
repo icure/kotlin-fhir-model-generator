@@ -32,9 +32,9 @@ fun main(args: Array<String>) {
     }
     copyExamples()
 
-    deleteFiles(Settings.destinationSrcDir + "/org/taktik/icure/fhir/entities/${Settings.modelVersion}")
+    deleteFiles(Settings.destinationSrcDir + "/io/icure/fhir/mapping/domain/fhir/${Settings.modelVersion}")
 
-    val fhirSpec = FhirSpec(Settings.destinationSrcDir, "org.taktik.icure.fhir.entities.${Settings.modelVersion}", Settings.topLevelClasses)
+    val fhirSpec = FhirSpec(Settings.destinationSrcDir, "io.icure.fhir.mapping.domain.fhir.${Settings.modelVersion}", Settings.topLevelClasses)
     fhirSpec.prepare()
     FhirRenderer(fhirSpec).build()
 }
