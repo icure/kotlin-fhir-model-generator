@@ -34,11 +34,14 @@ tasks.register<Jar>("api-jar") {
     from(sourceSets.main.get().output.classesDirs)
 }
 
+tasks.withType<GenerateModuleMetadata> {
+    dependsOn(tasks.getByName("api-jar"))
+}
+
 publishing {
     publications {
         create<MavenPublication>("kotlin-fhir-model-generator") {
             artifactId = "kotlin-fhir-model-generator"
-            from(components["java"])
             artifact(tasks.getByName("api-jar"))
         }
     }
