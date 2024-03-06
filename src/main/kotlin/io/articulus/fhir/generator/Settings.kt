@@ -9,9 +9,9 @@ object Settings {
          * http://hl7.org/fhir is the latest release. To generate other versions go to
          * http://hl7.org/fhir/directory.html and select which version to use.
          */
-        const val baseUrl = "http://hl7.org/fhir/"
+        var baseUrl = "http://hl7.org/fhir/"
         //const val baseUrl = "http://standardhealthrecord.org/guides/obf/"
-        const val modelVersion = "r4"
+        var modelVersion = "r5"
         //const val modelVersion = "obf"
 
         val downloadFiles = (System.getenv("downloadFiles") ?: "true").equals("true", true)
@@ -71,9 +71,9 @@ object Settings {
         )
 
         val enumNameMap = mapOf(
-                "httpto//hl7.org/fhir/contracttermsubtypecodes" to "ContractTermSubtypeCodes",
-                "httpto//hl7.org/fhir/coverage-exception" to "CoverageExceptionCodes",
-                "httpto//hl7.org/fhir/resource-type-link" to "ResourceTypeLink"
+                "http//hl7.org/fhir/contracttermsubtypecodes" to "ContractTermSubtypeCodes",
+                "http//hl7.org/fhir/coverage-exception" to "CoverageExceptionCodes",
+                "http//hl7.org/fhir/resource-type-link" to "ResourceTypeLink"
         )
 
         val jsonmap = mapOf(
@@ -103,6 +103,7 @@ object Settings {
                 /*"FhirAbstractResource" to mapOf(
                         "resourceType" to Pair("String?", "null")
                 )*/
+                "Base" to emptyMap()
         )
 }
 

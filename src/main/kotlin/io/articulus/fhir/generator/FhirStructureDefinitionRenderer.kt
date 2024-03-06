@@ -25,6 +25,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
         val allClasses = spec.writeableProfile().flatMap { it.writeableClasses() }
         val superClasses = allClasses.filter { c -> allClasses.any { it.superClass == c } }
+        val undeclaredSuperClasses = allClasses.mapNotNull { c -> c.superClass }.filter { c -> !allClasses.contains(c) }
         val packages = spec.writeableProfile().flatMap { p ->
             p.writeableClasses().map { c -> c.name to spec.packageName + "." + p.targetName.toLowerCase() }
         }.toMap() +
@@ -46,6 +47,18 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
             )
 
             val header = buildHeader(data)
+
+            undeclaredSuperClasses.filter { c -> !Settings.natives.contains(c.name) && !Settings.blackList.contains(c.name) }
+                .forEach { c ->
+                    val packageName = packages[c.name] ?: spec.packageName
+                    val out = FileSpec.builder(packageName, c.name)
+                    out.addFileComment(header)
+                    val classBody = buildInterface(c, packages, spec.makeReadonlyProperties)
+                    out.addType(classBody)
+                    log.debug("Building interface {}", c.name)
+                    val dir = spec.info.directory
+                    out.build().writeTo(File(dir))
+                }
 
             classes.filter { c -> !Settings.natives.contains(c.name) && !Settings.blackList.contains(c.name) }
                 .forEach { c ->

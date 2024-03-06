@@ -16,6 +16,15 @@ fun main(args: Array<String>) {
     Settings.destinationTestDir = args[1]
     Settings.samplesDir = args[2]
 
+    if (args.size > 3) {
+        Settings.baseUrl = args[3]
+    }
+
+    if (args.size > 4) {
+        Settings.modelVersion = args[4]
+    }
+
+
     val baseUrl = URL(Settings.baseUrl)
     if (Settings.downloadFiles) {
         deleteFiles(Settings.downloadDir)
@@ -91,14 +100,19 @@ fun unzip(zipFile: String, targetLocation: String) {
     val zin = ZipInputStream(fin)
     var ze = zin.nextEntry
     while (ze != null) {
-        println("Extracting ${ze.name}")
+        val zName = ze.name.replace("examples-json/", "")
+        println("Extracting $zName")
 
         if (ze.isDirectory) {
-            createDir(ze.name)
+            createDir(zName)
         } else {
-            val fout = FileOutputStream(targetLocation + ze.name)
-            fout.use { output ->
-                zin.copyTo(output)
+            try {
+                val fout = FileOutputStream(targetLocation + zName)
+                fout.use { output ->
+                    zin.copyTo(output)
+                }
+            } catch (e: Exception) {
+                println("Error extracting $zName: ${e.message}")
             }
         }
         ze = zin.nextEntry
