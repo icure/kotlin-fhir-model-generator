@@ -8,13 +8,19 @@ val repoPassword: String by project
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.22"
     id("com.taktik.gradle.git-version") version "2.0.13-gd2de854853"
+    id("application")
     `maven-publish`
 }
 
 val gitVersion: String? by project
 
-group = "io.icure"
+group = "io.icure.fhir"
 version = gitVersion ?: "0.0.1-SNAPSHOT"
+description = "Kotlin on FHIR Model Generator"
+
+application {
+    mainClass = "io.articulus.fhir.generator.GeneratorKt"
+}
 
 repositories {
     mavenLocal()
@@ -41,6 +47,36 @@ publishing {
             }
         }
     }
+}
+
+kotlin {
+    jvmToolchain(17)
+    sourceSets {
+        val main by getting {
+            kotlin.srcDir("src/main/kotlin")
+            kotlin.srcDir("gen/src/main/kotlin")
+            resources.srcDir("src/main/resources")
+        }
+        val test by getting {
+            kotlin.srcDir("src/main/kotlin")
+            kotlin.srcDir("gen/src/main/kotlin")
+            resources.srcDir("src/test/resources")
+            resources.srcDir("gen/src/main/resources")
+        }
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType<JavaCompile>() {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Javadoc>() {
+    options.encoding = "UTF-8"
 }
 
 tasks.withType<PublishToMavenRepository> {
@@ -93,38 +129,4 @@ dependencies {
     testImplementation(libs.org.jetbrains.kotlin.kotlin.test)
     testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
     testImplementation(libs.org.junit.jupiter.junit.jupiter.params)
-}
-
-group = "io.icure.fhir"
-version = "0.0.1"
-description = "Kotlin on FHIR Model Generator"
-
-kotlin {
-    jvmToolchain(17)
-    /*sourceSets {
-        val main by getting {
-            kotlin.srcDir("src/main/kotlin")
-            kotlin.srcDir("gen/src/main/kotlin")
-            resources.srcDir("src/main/resources")
-        }
-        val test by getting {
-            kotlin.srcDir("src/main/kotlin")
-            kotlin.srcDir("gen/src/main/kotlin")
-            resources.srcDir("src/test/resources")
-            resources.srcDir("gen/src/main/resources")
-        }
-    }*/
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-tasks.withType<JavaCompile>() {
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<Javadoc>() {
-    options.encoding = "UTF-8"
 }
