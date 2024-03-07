@@ -6,15 +6,13 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import java.io.File
+import java.util.Locale
 
 class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
@@ -65,11 +63,23 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                     val packageName = packages[c.name] ?: spec.packageName
                     val out = FileSpec.builder(packageName, c.name)
                     out.addFileComment(header)
-                    val classBody = if (superClasses.contains(c)) buildInterface(
-                        c,
-                        packages,
-                        spec.makeReadonlyProperties
-                    ) else buildClass(c, packages, spec.topLevelClasses, spec.makeReadonlyProperties)
+                    val classBody = if (superClasses.contains(c)) {
+                        buildInterface(
+                            c,
+                            packages,
+                            spec.makeReadonlyProperties
+                        ).also {
+                            if (Settings.forcedImplementedInterfaces.contains(c.name)) {
+                                val extra = FileSpec.builder("$packageName.${c.name.lowercase(Locale.getDefault())}", c.name)
+                                extra.addFileComment(header)
+                                extra.addType(buildClass(c.copy(superClass = c, properties = mutableMapOf()), packages, spec.topLevelClasses))
+                                log.debug("Building class {}", c.name)
+                                val dir = spec.info.directory
+                                extra.build().writeTo(File(dir))
+                            }
+                        }
+                    } else buildClass(c, packages, spec.topLevelClasses)
+
                     out.addType(classBody)
                     log.debug("Building class {}", c.name)
                     val dir = spec.info.directory
@@ -122,9 +132,9 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
     private fun buildClass(
         cls: FhirClass,
-        packages: Map<String, String> = mapOf(),
-        topLevelClasses: List<String> = listOf(),
-        makeReadonlyProperties: Boolean = true
+        packages: Map<String, String> = emptyMap(),
+        topLevelClasses: List<String> = emptyList(),
+        extraInterfaces: List<ClassName> = emptyList()
     ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(cls.name).addModifiers(KModifier.DATA)
 
@@ -165,6 +175,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 )
             )
         }
+
+        extraInterfaces.forEach {
+            classBuilder.addSuperinterface(it)
+        }
+
         classBuilder.addAnnotation(
             AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation", "JsonInclude"))
                 .addMember("JsonInclude.Include.NON_NULL").build()
@@ -214,7 +229,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         return if (prop.isList()) {
             val arrayList = ClassName("kotlin.collections", "List")
             val listOfProps = arrayList.parameterizedBy(typeClassName)
-            val parameterSpec = ParameterSpec.builder(propName, listOfProps).defaultValue(CodeBlock.of("listOf()"))
+            val parameterSpec = ParameterSpec.builder(propName, listOfProps).defaultValue(CodeBlock.of("emptyList()"))
 
             parameterSpec.build()
         } else {
@@ -274,8 +289,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
             }.let {
                 if (isInConstructor) it.initializer(propName) else if (isInterface) it else it.initializer(
                     CodeBlock.of(
-                        "listOf<%T>()",
-                        typeClassName
+                        "emptyList()"
                     )
                 )
             }

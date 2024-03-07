@@ -103,7 +103,9 @@ object Settings {
                 /*"FhirAbstractResource" to mapOf(
                         "resourceType" to Pair("String?", "null")
                 )*/
-                "Base" to emptyMap()
+        )
+        val forcedImplementedInterfaces = listOf(
+                "Quantity"
         )
 }
 

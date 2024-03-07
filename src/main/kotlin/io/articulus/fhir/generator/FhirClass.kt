@@ -3,19 +3,21 @@ package io.articulus.fhir.generator
 /**
  * An element/resource that should become its own class.
  */
-class FhirClass(element: FhirStructureDefinitionElement) {
+class FhirClass(val path: String, val name: String, var module: String?, val resourceType: String?, val superclassName: String?, var superClass: FhirClass?, val short: String, val formal: String, val properties: MutableMap<String, FhirClassProperty>) {
+
+    constructor(element: FhirStructureDefinitionElement) : this(
+        element.path,
+        element.nameIfClass(),
+        null,
+        element.nameOfResource(),
+        if (element.nameIfClass() == "Resource") "FhirAbstractResource" else element.getSuperclassName(),
+        null,
+        element.definition.short,
+        element.definition.formal,
+        mutableMapOf()
+    )
+
     val log by logger()
-
-    val path: String = element.path
-    val name: String = element.nameIfClass()
-    var module: String? = null
-    val resourceType: String? = element.nameOfResource()
-    val superclassName: String? = if (name == "Resource") "FhirAbstractResource" else element.getSuperclassName()
-    var superClass: FhirClass? = null
-    val short: String = element.definition.short
-    val formal: String = element.definition.formal
-
-    val properties: MutableMap<String, FhirClassProperty> = mutableMapOf()
 
     companion object {
         val known = mutableMapOf<String, FhirClass>()
@@ -53,6 +55,20 @@ class FhirClass(element: FhirStructureDefinitionElement) {
 
             return cls!!.properties[key]
         }
+    }
+
+    fun copy(
+        path: String = this.path,
+        name: String = this.name,
+        module: String? = this.module,
+        resourceType: String? = this.resourceType,
+        superclassName: String? = this.superclassName,
+        superClass: FhirClass? = this.superClass,
+        short: String = this.short,
+        formal: String = this.formal,
+        properties: MutableMap<String, FhirClassProperty> = this.properties
+    ): FhirClass {
+        return FhirClass(path, name, module, resourceType, superclassName, superClass, short, formal, properties)
     }
 
     fun addProperty(prop: FhirClassProperty) {
