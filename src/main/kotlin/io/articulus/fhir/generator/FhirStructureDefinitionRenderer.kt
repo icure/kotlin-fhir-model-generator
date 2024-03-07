@@ -233,10 +233,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
             parameterSpec.build()
         } else {
+            val isNullable = (prop.min == 0 || prop.oneOfMany?.let { propName.startsWith(it) } == true) && !forceNotNull
             val parameterSpec =
-                ParameterSpec.builder(propName, typeClassName.isNullable(prop.min == 0 && !forceNotNull))
+                ParameterSpec.builder(propName, typeClassName.isNullable(isNullable))
 
-            if (prop.min == 0 && !forceNotNull) {
+            if (isNullable) {
                 parameterSpec.defaultValue("null")
             }
 
@@ -294,10 +295,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 )
             }
         } else {
-            PropertySpec.builder(propName, typeClassName.isNullable(prop.min == 0 && !forceNotNull))
+            val isNullable = (prop.min == 0 || prop.oneOfMany?.let { propName.startsWith(it) } == true) && !forceNotNull
+            PropertySpec.builder(propName, typeClassName.isNullable(isNullable))
                 .addKdoc("%L\n", prop.shortDesc).let {
                 if (isInConstructor) it.initializer(propName) else if (isInterface) it else {
-                    if (prop.min == 0) {
+                    if (isNullable) {
                         it.initializer("null")
                     } else if (prop.min == 1) {
                         if (Settings.defaultValues.contains(mappedTypeName)) {
