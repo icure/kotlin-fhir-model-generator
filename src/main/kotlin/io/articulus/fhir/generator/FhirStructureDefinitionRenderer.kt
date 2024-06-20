@@ -20,6 +20,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
     fun render() {
         renderManualClasses()
+        renderManualInterfaces()
 
         val allClasses = spec.writeableProfile().flatMap { it.writeableClasses() }
         val superClasses = allClasses.filter { c -> allClasses.any { it.superClass == c } }
@@ -106,12 +107,35 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         }
     }
 
+    private fun renderManualInterfaces() {
+        Settings.manualInterfaces.forEach {
+            val out = FileSpec.builder(it.fullPackageName(spec.packageName), it.name)
+            val classBuilder = TypeSpec.interfaceBuilder(it.name)
+
+            out.addType(classBuilder.build())
+            out.build().writeTo(File(Settings.destinationSrcDir))
+        }
+    }
+
+    private fun TypeSpec.Builder.addAdditionalInterfaces(className: String): TypeSpec.Builder {
+        if (Settings.extraSuperInterfaces.containsKey(className)) {
+            this.addSuperinterfaces(
+                Settings.extraSuperInterfaces[className]!!.map { extraInterface ->
+                    extraInterface.className(spec.packageName)
+                }
+            )
+        }
+        return this
+    }
+
     private fun buildInterface(
         cls: FhirClass,
         packages: Map<String, String> = mapOf(),
         makeReadonlyProperties: Boolean = true
     ): TypeSpec {
         val classBuilder = TypeSpec.interfaceBuilder(cls.name)
+
+        classBuilder.addAdditionalInterfaces(cls.name)
 
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
 
@@ -137,6 +161,8 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         extraInterfaces: List<ClassName> = emptyList()
     ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(cls.name).addModifiers(KModifier.DATA)
+
+        classBuilder.addAdditionalInterfaces(cls.name)
 
         val hierarchy = mutableListOf(cls)
         var marker = cls
