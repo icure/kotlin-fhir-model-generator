@@ -8,7 +8,9 @@ val repoPassword: String by project
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.22"
     id("com.taktik.gradle.git-version") version "2.0.13-gd2de854853"
+    id("com.google.devtools.ksp") version "1.9.22-1.0.16"
     id("application")
+    kotlin("plugin.serialization").version("1.9.22").apply(false)
     `maven-publish`
 }
 
@@ -20,13 +22,6 @@ description = "Kotlin on FHIR Model Generator"
 
 application {
     mainClass = "io.articulus.fhir.generator.GeneratorKt"
-}
-
-repositories {
-    mavenLocal()
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
 }
 
 tasks.register<Jar>("api-jar") {
@@ -124,6 +119,7 @@ tasks.withType<Jar> {
     }
 }
 dependencies {
+    ksp(project(":sdk-codegen:ksp-json-processor"))
     api(libs.org.jetbrains.kotlin.kotlin.stdlib.jdk8)
     api(libs.org.jetbrains.kotlin.kotlin.reflect)
     api(libs.com.google.code.gson.gson)
@@ -136,6 +132,7 @@ dependencies {
     api(libs.com.fasterxml.jackson.core)
     api(libs.com.fasterxml.jackson.annotations)
     api(libs.com.fasterxml.jackson.dataformat.xml)
+    api(libs.com.google.devtools.ksp.kotlin)
 
     testImplementation(libs.org.jetbrains.kotlin.kotlin.test)
     testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
