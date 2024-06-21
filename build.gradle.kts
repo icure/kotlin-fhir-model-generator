@@ -71,6 +71,12 @@ kotlin {
 }
 
 java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 
@@ -137,4 +143,22 @@ dependencies {
     testImplementation(libs.org.jetbrains.kotlin.kotlin.test)
     testImplementation(libs.org.junit.jupiter.junit.jupiter.api)
     testImplementation(libs.org.junit.jupiter.junit.jupiter.params)
+}
+
+tasks {
+    register<Jar>("fatJar") {
+        dependsOn.addAll(listOf("compileJava", "compileKotlin", "processResources"))
+        archiveClassifier.set("fhirModelGenerator") // Naming the jar
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest { attributes(mapOf("Main-Class" to application.mainClass)) }
+        val sourcesMain = sourceSets.main.get()
+        val contents = configurations.runtimeClasspath.get()
+            .map { if (it.isDirectory) it else zipTree(it) } +
+                sourcesMain.output
+        from(contents)
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_21.toString()
 }

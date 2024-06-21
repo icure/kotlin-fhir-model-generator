@@ -14,6 +14,9 @@ import java.util.zip.ZipInputStream
 
 
 fun main(args: Array<String>) {
+
+    args.forEach { println("Argument: $it") }
+
     Settings.destinationSrcDir = args[0]
     Settings.destinationTestDir = args[1]
     Settings.samplesDir = args[2]
