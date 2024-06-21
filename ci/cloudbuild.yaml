@@ -1,7 +1,40 @@
 steps:
+    # Decrypt the file containing the key
+    -   name: 'gcr.io/cloud-builders/gcloud'
+        args:
+            - kms
+            - decrypt
+            - --ciphertext-file=ci/ci_sdk-codegen_kotlin-fhir-model-generator.enc
+            - --plaintext-file=/root/.ssh/ci_icure_sdk-codegen_kotlin-fhir-model-generator_fetch
+            - --location=global
+            - --keyring=ci-keyring
+            - --key=bitbucket-key
+        volumes:
+            -   name: 'ssh'
+                path: /root/.ssh
+
+    # Set up git with key and domain.
     -   name: 'gcr.io/cloud-builders/git'
         entrypoint: 'bash'
-        args: [ '-c', 'git fetch --unshallow --tags && git checkout ${BRANCH_NAME}' ]
+        args:
+            - '-c'
+            - |
+                chmod 600 /root/.ssh/ci_icure_sdk-codegen_kotlin-fhir-model-generator_fetch
+                cat <<EOF >/root/.ssh/config
+                Hostname github.com
+                IdentityFile /root/.ssh/ci_icure_sdk-codegen_kotlin-fhir-model-generator_fetch
+                EOF
+                cp ci/known_hosts_ci /root/.ssh/known_hosts
+        volumes:
+            -   name: 'ssh'
+                path: /root/.ssh
+
+    -   name: 'gcr.io/cloud-builders/git'
+        entrypoint: 'bash'
+        args: [ '-c', 'git fetch --unshallow --tags && git checkout ${BRANCH_NAME} && git submodule init && git submodule update' ]
+        volumes:
+            -   name: 'ssh'
+                path: /root/.ssh
 
     -   name: 'taktik/git-version:2.0.13-gd2de854853'
         args: [ '-f', 'git.version' ]
