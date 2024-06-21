@@ -20,4 +20,4 @@ RUN java -jar ./build/libs/fhirModelGenerator.jar ./gen/src/main/kotlin ./gen/sr
 RUN java -jar ./build/libs/fhirModelGenerator.jar ./gen/src/main/kotlin ./gen/src/test/kotlin ./gen/src/main/resources/samples https://hl7.org/fhir/R4B/ r4b
 RUN java -jar ./build/libs/fhirModelGenerator.jar ./gen/src/main/kotlin ./gen/src/test/kotlin ./gen/src/main/resources/samples https://hl7.org/fhir/R5/ r5
 RUN java -jar ./build/libs/fhirModelGenerator.jar ./gen/src/main/kotlin ./gen/src/test/kotlin ./gen/src/main/resources/samples https://hl7.org/fhir/6.0.0-ballot1/ r6
-RUN ./gradlew -x test publish
+RUN ./gradlew -x :test -x :kspKotlin publish
