@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.10_7-jdk-alpine
+FROM eclipse-temurin:21.0.1_12-jdk-alpine
 
 ARG repoUsername
 ARG repoPassword
