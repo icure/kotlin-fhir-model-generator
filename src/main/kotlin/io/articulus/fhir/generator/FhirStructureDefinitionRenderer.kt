@@ -207,6 +207,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         }
 
         classBuilder.addAnnotation(
+            AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable"))
+                .build()
+        )
+
+        classBuilder.addAnnotation(
             AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation", "JsonInclude"))
                 .addMember("JsonInclude.Include.NON_NULL").build()
         )

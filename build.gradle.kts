@@ -7,10 +7,10 @@ val repoPassword: String by project
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.22"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22" apply false
     id("com.taktik.gradle.git-version") version "2.0.13-gd2de854853"
     id("com.google.devtools.ksp") version "1.9.22-1.0.16"
     id("application")
-    kotlin("plugin.serialization").version("1.9.22").apply(false)
     `maven-publish`
 }
 
@@ -128,6 +128,7 @@ dependencies {
     ksp(project(":sdk-codegen:ksp-json-processor"))
     api(libs.org.jetbrains.kotlin.kotlin.stdlib.jdk8)
     api(libs.org.jetbrains.kotlin.kotlin.reflect)
+    api(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
     api(libs.com.google.code.gson.gson)
     api(libs.com.squareup.kotlinpoet)
     api(libs.org.slf4j.slf4j.api)
