@@ -12,6 +12,7 @@ org-junit-jupiter-junit-jupiter-params = "5.1.0"
 org-slf4j-slf4j-api = "2.0.9"
 com-fasterxml-jackson = "2.16.1"
 ksp = "1.9.22-1.0.16"
+org-jetbrains-kotlinx-kotlinx-serialization-json = "1.6.2"
 
 [libraries]
 ch-qos-logback-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "ch-qos-logback-logback-classic" }
@@ -26,9 +27,11 @@ com-squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "c
 org-jetbrains-kotlin-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "org-jetbrains-kotlin-kotlin-reflect" }
 org-jetbrains-kotlin-kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "org-jetbrains-kotlin-kotlin-stdlib-jdk8" }
 org-jetbrains-kotlin-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "org-jetbrains-kotlin-kotlin-test" }
+org-jetbrains-kotlinx-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "org-jetbrains-kotlinx-kotlinx-serialization-json" }
 org-junit-jupiter-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "org-junit-jupiter-junit-jupiter-api" }
 org-junit-jupiter-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "org-junit-jupiter-junit-jupiter-params" }
 com-google-devtools-ksp-kotlin = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
+
 
 org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j-slf4j-api" }
 
