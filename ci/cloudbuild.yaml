@@ -61,3 +61,7 @@ availableSecrets:
           env: 'REPO_PASSWORD'
 
 timeout: 1800s
+
+options:
+    pool:
+        name: "projects/taktik-dev/locations/europe-west1/workerPools/e2-highcpu-8"
