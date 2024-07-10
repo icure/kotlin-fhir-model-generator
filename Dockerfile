@@ -8,13 +8,10 @@ ENV ORG_GRADLE_PROJECT_repoPassword=$repoPassword
 WORKDIR /build
 COPY . ./
 
-# Add gradle properties to disable daemon
-RUN echo "org.gradle.daemon=false" >> gradle.properties
-
 RUN apk --no-cache add bash # for git-version plugin
 
 # build the fat jar
-RUN ./gradlew :fatJar --stacktrace --debug --no-daemon
+RUN ./gradlew :fatJar
 
 # Move and rename the fat jar
 RUN mv ./build/libs/*-fhirModelGenerator.jar ./build/libs/fhirModelGenerator.jar
