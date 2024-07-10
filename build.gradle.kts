@@ -6,10 +6,10 @@ val repoUsername: String by project
 val repoPassword: String by project
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.22"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22" apply true
+    id("org.jetbrains.kotlin.jvm") version "1.9.24"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.24" apply true
     id("com.taktik.gradle.git-version") version "2.0.13-gd2de854853"
-    id("com.google.devtools.ksp") version "1.9.22-1.0.16"
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
     id("application")
     `maven-publish`
 }
