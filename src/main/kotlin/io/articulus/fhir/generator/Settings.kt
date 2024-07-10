@@ -121,9 +121,11 @@ object Settings {
         }
 
         private val serviceLike = InterfaceInfo("ServiceLike", "servicelike")
+        private val hcpLike = InterfaceInfo("HealthcarePartyLike", "healthcarepartylike")
 
         val manualInterfaces = listOf(
-                serviceLike
+                serviceLike,
+                hcpLike
         )
 
         val extraSuperInterfaces = mapOf(
@@ -132,6 +134,8 @@ object Settings {
                 "ObservationComponent" to listOf(serviceLike),
                 "ImmunizationRecommendation" to listOf(serviceLike),
                 "AllergyIntolerance" to listOf(serviceLike),
+                "Practitioner" to listOf(hcpLike),
+                "Organization" to listOf(hcpLike),
         )
 }
 
