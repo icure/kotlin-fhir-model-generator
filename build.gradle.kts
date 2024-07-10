@@ -24,6 +24,13 @@ application {
     mainClass = "io.articulus.fhir.generator.GeneratorKt"
 }
 
+configurations {
+    all {
+        exclude(group = "org.slf4j", module = "slf4j-log4j12")
+        exclude(group = "log4j", module = "log4j")
+    }
+}
+
 tasks.register<Jar>("api-jar") {
     from("gen/src/main/kotlin")
     from(sourceSets.main.get().output.classesDirs)
@@ -147,6 +154,10 @@ dependencies {
 }
 
 tasks {
+    withType<Copy> {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
     register<Jar>("fatJar") {
         dependsOn.addAll(listOf("compileJava", "compileKotlin", "processResources"))
         archiveClassifier.set("fhirModelGenerator") // Naming the jar
