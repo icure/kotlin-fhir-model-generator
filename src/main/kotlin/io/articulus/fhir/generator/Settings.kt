@@ -25,7 +25,7 @@ object Settings {
         var destinationTestDir = "$destinationBaseDir/src/test/kotlin"
         var samplesDir = "$destinationBaseDir/src/test/resources/model/sample_data/$modelVersion"
 
-        val blackList = listOf("ObservationComponentReferenceRange")
+        val blackList = listOf("ObservationComponentReferenceRange", "Xhtml")
 
         val reservedMap = mapOf(
                 "for" to "for_fhir",
@@ -59,7 +59,7 @@ object Settings {
                 "canonical" to "String",
                 "oid" to "String",
                 "uuid" to "String",
-                "xhtml" to "String",
+                "xhtml" to "Xhtml",
                 "base64binary" to "String",
                 "http://hl7.org/fhirpath/system.string" to "String"
         )
@@ -106,6 +106,10 @@ object Settings {
                 /*"FhirAbstractResource" to mapOf(
                         "resourceType" to Pair("String?", "null")
                 )*/
+        )
+
+        val manualValueClasses = mapOf<String, Pair<String, Pair<String, String>>>(
+                "Xhtml" to ("s" to Pair("String", "s"))
         )
 
         val forcedImplementedInterfaces = listOf(
