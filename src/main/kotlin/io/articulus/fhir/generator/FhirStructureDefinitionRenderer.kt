@@ -19,6 +19,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
     private val log by logger()
 
     fun render() {
+        renderManualValueClasses()
         renderManualClasses()
         renderManualInterfaces()
 
@@ -102,6 +103,49 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 }
                 classBuilder.addProperty(propBuilder.build())
             }
+            out.addType(classBuilder.build())
+            out.build().writeTo(File(Settings.destinationSrcDir))
+        }
+    }
+
+    private fun renderManualValueClasses() {
+        Settings.manualValueClasses.forEach { (name, property) ->
+            val packageName = spec.packageName + ".${name.lowercase()}"
+            val out = FileSpec.builder(packageName, name)
+            val classBuilder = TypeSpec.classBuilder(name).addModifiers(KModifier.VALUE)
+
+            val (propName, typeInfo) = property
+            val className = ClassName(packageName, typeInfo.first)
+            val propBuilder = PropertySpec.builder(propName, className)
+            if (typeInfo.second.isNotBlank()) {
+                propBuilder.initializer(typeInfo.second)
+            }
+
+            classBuilder.addAnnotation(ClassName("kotlin.jvm", "JvmInline"))
+
+            classBuilder.addAnnotation(
+                AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable"))
+                    .build()
+            )
+
+            classBuilder.addAnnotation(
+                AnnotationSpec.builder(
+                    ClassName(
+                        "com.fasterxml.jackson.databind.annotation",
+                        "JsonDeserialize"
+                    )
+                ).addMember("using = %T.None::class", ClassName("com.fasterxml.jackson.databind", "JsonDeserializer"))
+                    .build()
+            )
+
+            classBuilder.addProperty(propBuilder.build())
+
+            classBuilder.primaryConstructor(
+                FunSpec.constructorBuilder().addParameter(
+                    ParameterSpec.builder(propName, className).build()
+                ).build()
+            )
+
             out.addType(classBuilder.build())
             out.build().writeTo(File(Settings.destinationSrcDir))
         }
