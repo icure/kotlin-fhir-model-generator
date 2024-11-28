@@ -27,7 +27,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         val superClasses = allClasses.filter { c -> allClasses.any { it.superClass == c } }
         val undeclaredSuperClasses = allClasses.mapNotNull { c -> c.superClass }.filter { c -> !allClasses.contains(c) }
         val packages = spec.writeableProfile().flatMap { p ->
-            p.writeableClasses().map { c -> c.name to spec.packageName + "." + p.targetName.toLowerCase() }
+            p.writeableClasses().map { c -> c.name to spec.packageName + "." + p.targetName.lowercase() }
         }.toMap() +
                 Settings.primitives.map { it to "kotlin" } +
                 mapOf(
@@ -121,20 +121,21 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 propBuilder.initializer(typeInfo.second)
             }
 
-            classBuilder.addAnnotation(ClassName("kotlin.jvm", "JvmInline"))
+            jvmOnly {
+                classBuilder.addAnnotation(ClassName("kotlin.jvm", "JvmInline"))
+                classBuilder.addAnnotation(
+                    AnnotationSpec.builder(
+                        ClassName(
+                            "com.fasterxml.jackson.databind.annotation",
+                            "JsonDeserialize"
+                        )
+                    ).addMember("using = %T.None::class", ClassName("com.fasterxml.jackson.databind", "JsonDeserializer"))
+                        .build()
+                )
+            }
 
             classBuilder.addAnnotation(
                 AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable"))
-                    .build()
-            )
-
-            classBuilder.addAnnotation(
-                AnnotationSpec.builder(
-                    ClassName(
-                        "com.fasterxml.jackson.databind.annotation",
-                        "JsonDeserialize"
-                    )
-                ).addMember("using = %T.None::class", ClassName("com.fasterxml.jackson.databind", "JsonDeserializer"))
                     .build()
             )
 
@@ -255,37 +256,40 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 .build()
         )
 
-        classBuilder.addAnnotation(
-            AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation", "JsonInclude"))
-                .addMember("JsonInclude.Include.NON_NULL").build()
-        )
-        classBuilder.addAnnotation(
-            AnnotationSpec.builder(
-                ClassName(
-                    "com.fasterxml.jackson.annotation",
-                    "JsonIgnoreProperties"
-                )
-            ).addMember("ignoreUnknown = true").build()
-        )
-        classBuilder.addAnnotation(
-            AnnotationSpec.builder(
-                ClassName(
-                    "com.fasterxml.jackson.databind.annotation",
-                    "JsonDeserialize"
-                )
-            ).addMember("using = %T.None::class", ClassName("com.fasterxml.jackson.databind", "JsonDeserializer"))
-                .build()
-        )
-        classBuilder.addAnnotation(
-            AnnotationSpec.builder(
-                ClassName(
-                    "com.fasterxml.jackson.annotation",
-                    "JsonPropertyOrder"
-                )
-            ).also {
-                properties.forEach { (propName, _) -> it.addMember("%S", propName) }
-            }.build()
-        )
+        jvmOnly {
+            classBuilder.addAnnotation(
+                AnnotationSpec.builder(ClassName("com.fasterxml.jackson.annotation", "JsonInclude"))
+                    .addMember("JsonInclude.Include.NON_NULL").build()
+            )
+            classBuilder.addAnnotation(
+                AnnotationSpec.builder(
+                    ClassName(
+                        "com.fasterxml.jackson.annotation",
+                        "JsonIgnoreProperties"
+                    )
+                ).addMember("ignoreUnknown = true").build()
+            )
+            classBuilder.addAnnotation(
+                AnnotationSpec.builder(
+                    ClassName(
+                        "com.fasterxml.jackson.databind.annotation",
+                        "JsonDeserialize"
+                    )
+                ).addMember("using = %T.None::class", ClassName("com.fasterxml.jackson.databind", "JsonDeserializer"))
+                    .build()
+            )
+            classBuilder.addAnnotation(
+                AnnotationSpec.builder(
+                    ClassName(
+                        "com.fasterxml.jackson.annotation",
+                        "JsonPropertyOrder"
+                    )
+                ).also {
+                    properties.forEach { (propName, _) -> it.addMember("%S", propName) }
+                }.build()
+            )
+        }
+
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
         classBuilder.primaryConstructor(primaryCtor.build())
 
@@ -327,7 +331,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
     }
 
     private fun mappedTypes(prop: FhirClassProperty, packages: Map<String, String>): Pair<String, ClassName> {
-        val mappedTypeName = Settings.classMap[prop.typeName.toLowerCase()] ?: prop.typeName
+        val mappedTypeName = Settings.classMap[prop.typeName.lowercase()] ?: prop.typeName
         val typeClassName = ClassName(packages[mappedTypeName] ?: spec.packageName, mappedTypeName)
 
         return Pair(mappedTypeName, typeClassName)
@@ -350,7 +354,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
             val arrayList = ClassName("kotlin.collections", "List")
             val listOfProps = arrayList.parameterizedBy(typeClassName)
             PropertySpec.builder(propName, listOfProps).let {
-                if (!isInterface) {
+                if (!isInterface && Settings.target == Settings.GenerationTarget.JVM) {
                     it.addAnnotation(
                         AnnotationSpec.builder(
                             ClassName(
@@ -394,7 +398,15 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         propertySpec: PropertySpec.Builder
     ): PropertySpec.Builder {
         return if (propName != origName) {
-            val foo = ClassName("com.fasterxml.jackson.annotation", "JsonProperty")
+            val foo = when (Settings.target) {
+                Settings.GenerationTarget.JVM -> {
+                    ClassName("com.fasterxml.jackson.annotation", "JsonProperty")
+                }
+                Settings.GenerationTarget.KMP -> {
+                    ClassName("kotlinx.serialization.json", "JsonNames")
+                }
+            }
+
             propertySpec.addAnnotation(
                 AnnotationSpec.builder(foo).addMember("\"${origName}\"")
                     .build()

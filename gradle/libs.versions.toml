@@ -1,18 +1,20 @@
 [versions]
-ch-qos-logback-logback-classic = "1.5.2"
+ch-qos-logback-logback-classic = "1.5.11"
 com-github-fge-json-patch = "1.13"
-com-google-code-gson-gson = "2.9.1"
+com-google-code-gson-gson = "2.10.1"
 com-google-guava-guava = "32.1.3-jre"
 com-squareup-kotlinpoet = "1.16.0"
-org-jetbrains-kotlin-kotlin-reflect = "1.9.24"
-org-jetbrains-kotlin-kotlin-stdlib-jdk8 = "1.9.24"
-org-jetbrains-kotlin-kotlin-test = "1.9.24"
-org-jetbrains-kotlinx-kotlinx-serialization-json = "1.6.3"
-org-junit-jupiter-junit-jupiter-api = "5.1.0"
-org-junit-jupiter-junit-jupiter-params = "5.1.0"
-org-slf4j-slf4j-api = "2.0.9"
-com-fasterxml-jackson = "2.16.1"
-ksp = "1.9.24-1.0.20"
+kotlin = "2.0.21"
+org-jetbrains-kotlin-kotlin-test = "2.0.21"
+org-jetbrains-kotlinx-kotlinx-serialization-json = "1.7.3"
+org-junit-jupiter-junit-jupiter-api = "5.10.5"
+org-junit-jupiter-junit-jupiter-params = "5.10.5"
+org-slf4j-slf4j-api = "2.0.16"
+com-fasterxml-jackson = "2.17.2"
+ksp = "2.0.21-1.0.28"
+agp = "8.2.2"
+android-minSdk = "24"
+android-compileSdk = "34"
 
 [libraries]
 ch-qos-logback-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "ch-qos-logback-logback-classic" }
@@ -24,15 +26,17 @@ com-github-fge-json-patch = { module = "com.github.java-json-tools:json-patch", 
 com-google-code-gson-gson = { module = "com.google.code.gson:gson", version.ref = "com-google-code-gson-gson" }
 com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "com-google-guava-guava" }
 com-squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "com-squareup-kotlinpoet" }
-org-jetbrains-kotlin-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "org-jetbrains-kotlin-kotlin-reflect" }
-org-jetbrains-kotlin-kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "org-jetbrains-kotlin-kotlin-stdlib-jdk8" }
+org-jetbrains-kotlin-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 org-jetbrains-kotlin-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "org-jetbrains-kotlin-kotlin-test" }
 org-jetbrains-kotlinx-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "org-jetbrains-kotlinx-kotlinx-serialization-json" }
 org-junit-jupiter-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "org-junit-jupiter-junit-jupiter-api" }
 org-junit-jupiter-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "org-junit-jupiter-junit-jupiter-params" }
 com-google-devtools-ksp-kotlin = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
-
-
 org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j-slf4j-api" }
 
-
+[plugins]
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+vanniktech-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.29.0" }

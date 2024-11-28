@@ -8,6 +8,13 @@ object Settings {
         val topLevelMappings: Map<String,String> = mapOf() //"id" to "_id")
         val topLevelNotNulls: List<String> = listOf() //"id")
 
+        var target: GenerationTarget = GenerationTarget.JVM
+
+        enum class GenerationTarget {
+                JVM,
+                KMP,
+        }
+
         /**
          * http://hl7.org/fhir is the latest release. To generate other versions go to
          * http://hl7.org/fhir/directory.html and select which version to use.
