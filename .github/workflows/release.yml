@@ -49,7 +49,7 @@ jobs:
 
             -   name: Publish JVM fhir-models to TAKTIK Maven
                 run: |
-                    ./gradlew -x test :generator:publishAllPublicationsToTaktikRepository -PgitVersion=${{ env.VERSION }}
+                    ./gradlew -x test :generator:publishKotlin-fhir-model-generatorPublicationToTaktikRepository -PgitVersion=${{ env.VERSION }}
                 env:
                     ORG_GRADLE_PROJECT_repoUsername: ${{ secrets.REPO_USERNAME }}
                     ORG_GRADLE_PROJECT_repoPassword: ${{ secrets.REPO_PASSWORD }}
