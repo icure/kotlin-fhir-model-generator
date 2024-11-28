@@ -1,0 +1,79 @@
+name: Release packages
+
+on:
+    push:
+        tags:
+            - '*'
+jobs:
+    release:
+        runs-on: self-hosted
+        steps:
+
+            -   name: Checkout code
+                uses: actions/checkout@v4
+                with:
+                    fetch-depth: 0
+                    fetch-tags: true
+                    submodules: 'recursive'
+                    token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+            -   name: Set up JDK 21
+                uses: actions/setup-java@v4
+                with:
+                    java-version: '21'
+                    distribution: 'temurin'
+
+            -   name: Grant execute permission for gradlew
+                run: chmod +x ./gradlew
+
+            -   name: Get the version
+                id: get_version
+                run: |
+                    if [[ $GITHUB_REF == refs/tags/* ]]; then
+                        echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+                    else
+                        echo "VERSION=latest" >> $GITHUB_OUTPUT
+                    fi
+
+            -   name: Setup Android SDK
+                uses: amyu/setup-android@v4
+                with:
+                    sdk-version: 35
+                    ndk-version: 24
+
+            -   name: Generate FHIR models
+                run: |
+                    ./gradlew :generator:generateModels -PgitVersion=${{ env.VERSION }}
+                env:
+                    VERSION: ${{ steps.get_version.outputs.VERSION }}
+
+            -   name: Publish JVM fhir-models to TAKTIK Maven
+                run: |
+                    ./gradlew -x test :generator:publishAllPublicationsToTaktikRepository -PgitVersion=${{ env.VERSION }}
+                env:
+                    ORG_GRADLE_PROJECT_repoUsername: ${{ secrets.REPO_USERNAME }}
+                    ORG_GRADLE_PROJECT_repoPassword: ${{ secrets.REPO_PASSWORD }}
+                    ORG_GRADLE_PROJECT_mavenReleasesRepository: ${{ secrets.MAVEN_RELEASES_REPOSITORY }}
+                    ORG_GRADLE_PROJECT_mavenSnapshotsRepository: ${{ secrets.MAVEN_SNAPSHOT_REPOSITORY }}
+                    ORG_GRADLE_PROJECT_mavenRepository: ${{ secrets.MAVEN_REPOSITORY }}
+                    VERSION: ${{ steps.get_version.outputs.VERSION }}
+
+            -   name: Create SECRET_KEY_RING_FILE
+                run: echo "${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}" > signing-secret-key-ring-file.gpg
+
+            -   name: Publish multiplatform fhir-models to MavenCentral
+                run: |
+                    ./gradlew :fhir-models:publishAllPublicationsToMavenLocalRepository -PgitVersion=${{ env.VERSION }}
+                env:
+                    VERSION: ${{ steps.get_version.outputs.VERSION }}
+                    ORG_GRADLE_PROJECT_signing_keyId: ${{ secrets.SIGNING_KEY_ID }}
+                    ORG_GRADLE_PROJECT_signing_password: ${{ secrets.SIGNING_PASSWORD }}
+                    ORG_GRADLE_PROJECT_signing_secretKeyRingFile: signing-secret-key-ring-file.gpg
+                    ANDROID_HOME: ~/android/sdk # The Android SDK is installed here from the setup-android action
+
+            -   name: Upload Release
+                run: |
+                    curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/icure/icure-multiplatform-sdk/releases -d '{"tag_name":"${{ env.VERSION }}","target_commitish":"develop","name":"${{ env.VERSION }}","draft":false,"prerelease":false,"generate_release_notes":true}'
+                    # gh release create ${{ env.VERSION }} -n "Release ${{ env.VERSION }}" --generate-notes
+                env:
+                    VERSION: ${{ steps.get_version.outputs.VERSION }}
