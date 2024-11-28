@@ -4,5 +4,7 @@
 build
 download
 gen
+.kotlin
 
 .DS_Store
+local.properties

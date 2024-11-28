@@ -29,6 +29,10 @@ fun main(args: Array<String>) {
         Settings.modelVersion = args[4]
     }
 
+    if (args.size > 5) {
+        Settings.target = Settings.GenerationTarget.valueOf(args[5])
+    }
+
 
     val baseUrl = URL(Settings.baseUrl)
     if (Settings.downloadFiles) {
