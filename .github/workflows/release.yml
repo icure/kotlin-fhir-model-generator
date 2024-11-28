@@ -35,11 +35,11 @@ jobs:
                         echo "VERSION=latest" >> $GITHUB_OUTPUT
                     fi
 
-            -   name: Setup Android SDK
-                uses: amyu/setup-android@v4
-                with:
-                    sdk-version: 35
-                    ndk-version: 24
+#            -   name: Setup Android SDK
+#                uses: amyu/setup-android@v4
+#                with:
+#                    sdk-version: 35
+#                    ndk-version: 24
 
             -   name: Generate FHIR models
                 run: |
@@ -69,7 +69,8 @@ jobs:
                     ORG_GRADLE_PROJECT_signing_keyId: ${{ secrets.SIGNING_KEY_ID }}
                     ORG_GRADLE_PROJECT_signing_password: ${{ secrets.SIGNING_PASSWORD }}
                     ORG_GRADLE_PROJECT_signing_secretKeyRingFile: signing-secret-key-ring-file.gpg
-                    ANDROID_HOME: ~/android/sdk # The Android SDK is installed here from the setup-android action
+                    ANDROID_HOME: /Users/clementvandendaelen/Library/Android/sdk
+#                    ANDROID_HOME: ~/android/sdk # The Android SDK is installed here from the setup-android action
 
             -   name: Upload Release
                 run: |
