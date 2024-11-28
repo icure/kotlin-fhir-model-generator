@@ -16,7 +16,7 @@ dependencyResolutionManagement {
 }
 
 include(
-    ":fhir-model",
+    ":fhir-models",
     ":generator"
 )
 

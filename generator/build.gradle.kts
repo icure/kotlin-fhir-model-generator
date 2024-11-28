@@ -7,7 +7,6 @@ val repoPassword: String by project
 
 plugins {
     alias(libs.plugins.kotlinJvm)
-    // id("com.taktik.gradle.git-version") version "2.0.13-gd2de854853"
     id("com.google.devtools.ksp") version "2.0.21-1.0.28"
     id("application")
     `maven-publish`
@@ -63,14 +62,14 @@ kotlin {
     jvmToolchain(21)
     sourceSets {
         val main by getting {
-            kotlin.srcDir("generator/src/main/kotlin")
+            kotlin.srcDir("src/main/kotlin")
             kotlin.srcDir("gen/src/main/kotlin")
-            resources.srcDir("generator/src/main/resources")
+            resources.srcDir("src/main/resources")
         }
         val test by getting {
-            kotlin.srcDir("generator/src/main/kotlin")
+            kotlin.srcDir("src/main/kotlin")
             kotlin.srcDir("gen/src/main/kotlin")
-            resources.srcDir("generator/src/test/resources")
+            resources.srcDir("src/test/resources")
             resources.srcDir("gen/src/main/resources")
         }
     }
@@ -131,8 +130,7 @@ tasks.withType<Jar> {
     }
 }
 dependencies {
-//    ksp(project(":sdk-codegen:ksp-json-processor"))
-//    api(libs.org.jetbrains.kotlin.kotlin.stdlib)
+    ksp(project(":sdk-codegen:ksp-json-processor"))
     api(libs.org.jetbrains.kotlin.kotlin.reflect)
     api(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
     api(libs.com.google.code.gson.gson)
@@ -160,8 +158,8 @@ val fhirVersionsMatrix = mapOf(
 )
 
 val targetMatrix = mapOf(
-    "JVM" to listOf("${project.rootDir}/gen/src/main/kotlin", "${project.rootDir}/gen/src/test/kotlin", "${project.rootDir}/gen/src/main/resources/samples"),
-    "KMP" to listOf("${project.rootDir}/fhir-model/src/commonMain/kotlin", "${project.rootDir}/fhir-model/src/commonTest/kotlin", "${project.rootDir}/fhir-model/src/commonMain/resources/samples")
+    "JVM" to listOf("${project.rootDir}/generator/gen/src/main/kotlin", "${project.rootDir}/generator/gen/src/test/kotlin", "${project.rootDir}/generator/gen/src/main/resources/samples"),
+    "KMP" to listOf("${project.rootDir}/fhir-models/src/commonMain/kotlin", "${project.rootDir}/fhir-models/src/commonTest/kotlin", "${project.rootDir}/fhir-models/src/commonMain/resources/samples")
 )
 
 tasks {
@@ -171,7 +169,7 @@ tasks {
 
     register<Jar>("fatJar") {
         dependsOn.addAll(listOf("compileJava", "compileKotlin", "processResources"))
-        archiveClassifier.set("fhirModelGenerator") // Naming the jar
+        archiveClassifier.set("fhirModelGenerator")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         manifest { attributes(mapOf("Main-Class" to application.mainClass)) }
         val sourcesMain = sourceSets.main.get()
