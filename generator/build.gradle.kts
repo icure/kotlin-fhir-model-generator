@@ -104,7 +104,7 @@ tasks.withType<PublishToMavenRepository> {
 
 tasks.withType<GenerateMavenPom>().all {
     doLast {
-        val file = File("./build/publications/kotlin-fhir-model-generator/pom-default.xml")
+        val file = File("${project.rootDir}/generator/build/publications/kotlin-fhir-model-generator/pom-default.xml")
         var text = file.readText()
         val regex = "(?s)(<dependencyManagement>.+?<dependencies>)(.+?)(</dependencies>.+?</dependencyManagement>)".toRegex()
         val matcher = regex.find(text)
