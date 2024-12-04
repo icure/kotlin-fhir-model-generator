@@ -330,8 +330,8 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                         .addMember(
                             "with = %T::class",
                             when (cls.name) {
-                                "Resource" -> ClassName("io.icure.fhir.mapping.domain.fhir.r4", "ResourceSerializer")
-                                "Quantity" -> ClassName("io.icure.fhir.mapping.domain.fhir.r4", "QuantitySerializer")
+                                "Resource" -> ClassName(spec.packageName, "ResourceSerializer")
+                                "Quantity" -> ClassName(spec.packageName, "QuantitySerializer")
                                 else -> throw IllegalStateException("Unknown class name: ${cls.name}")
                             }
                         )
