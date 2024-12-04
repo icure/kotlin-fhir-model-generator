@@ -1,7 +1,6 @@
 package io.articulus.fhir.generator
 
 import com.squareup.kotlinpoet.ClassName
-import io.articulus.fhir.generator.Constants.BASE_PACKAGE_NAME
 
 object Settings {
         val topLevelClasses: List<String> = listOf() //"Patient","Encounter","EpisodeOfCare","CareTeam","Device","Organization","HealthcareService","Practitioner","AllergyIntolerance","AdverseEvent","Condition","Procedure")

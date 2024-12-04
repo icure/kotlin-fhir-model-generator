@@ -13,6 +13,7 @@ org-slf4j-slf4j-api = "2.0.16"
 com-fasterxml-jackson = "2.17.2"
 ksp = "2.0.21-1.0.28"
 agp = "8.2.2"
+kotest = "6.0.0.M1"
 android-minSdk = "24"
 android-compileSdk = "34"
 
@@ -34,9 +35,14 @@ org-junit-jupiter-junit-jupiter-params = { module = "org.junit.jupiter:junit-jup
 com-google-devtools-ksp-kotlin = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j-slf4j-api" }
 
+# Kotest
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 vanniktech-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.29.0" }
+kotest-multiplatform = { id = "io.kotest.multiplatform", version.ref = "kotest" }

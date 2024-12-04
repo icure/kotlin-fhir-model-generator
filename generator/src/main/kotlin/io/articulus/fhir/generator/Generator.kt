@@ -1,8 +1,6 @@
 package io.articulus.fhir.generator
 
 import com.google.gson.JsonObject
-import io.articulus.fhir.generator.Constants.BASE_PACKAGE_NAME
-import io.articulus.fhir.generator.Constants.BASE_PACKAGE_NAME_PATH
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -41,9 +39,9 @@ fun main(args: Array<String>) {
     }
     copyExamples()
 
-    deleteFiles(Settings.destinationSrcDir + "${BASE_PACKAGE_NAME_PATH}/${Settings.modelVersion}")
+    deleteFiles(Settings.destinationSrcDir + "${Constants.getBasePackagePath()}/${Settings.modelVersion}")
 
-    val fhirSpec = FhirSpec(Settings.destinationSrcDir, "${BASE_PACKAGE_NAME}.${Settings.modelVersion}", Settings.topLevelClasses)
+    val fhirSpec = FhirSpec(Settings.destinationSrcDir, "${Constants.getBasePackageName()}.${Settings.modelVersion}", Settings.topLevelClasses)
     fhirSpec.prepare()
     FhirRenderer(fhirSpec).build()
 }

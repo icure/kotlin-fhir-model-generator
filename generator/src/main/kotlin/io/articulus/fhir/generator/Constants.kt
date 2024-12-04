@@ -1,6 +1,21 @@
 package io.articulus.fhir.generator
 
 object Constants {
-    const val BASE_PACKAGE_NAME = "io.icure.fhir.mapping.domain.fhir"
-    val BASE_PACKAGE_NAME_PATH = "/${BASE_PACKAGE_NAME.replace(".", "/")}"
+    private const val BASE_PACKAGE_NAME = "io.icure.fhir.mapping.domain.fhir"
+
+    fun getBasePackageName(): String {
+        return buildString {
+            append(BASE_PACKAGE_NAME)
+            jvmOnly {
+                append(".xml")
+            }
+        }
+    }
+
+    fun getBasePackagePath(): String {
+        return buildString {
+            append("/")
+            append(getBasePackageName().replace(".", "/"))
+        }
+    }
 }

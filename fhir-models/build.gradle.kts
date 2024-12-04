@@ -7,11 +7,14 @@ plugins {
     alias(libs.plugins.kotlinSerialization) apply true
     alias(libs.plugins.androidLibrary) apply true
     alias(libs.plugins.vanniktech.mavenPublish) apply true
+    alias(libs.plugins.kotest.multiplatform)
     signing
 }
 
+val gitVersion: String? by project
+
 group = "com.icure"
-version = "1.0.0"
+version = gitVersion ?: "0.0.1-SNAPSHOT"
 
 kotlin {
     jvm()
@@ -33,6 +36,16 @@ kotlin {
                 implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
             }
             kotlin.srcDir("src/commonMain/kotlin")
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotest.assertions.core)
+                implementation(libs.kotest.framework.engine)
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+            kotlin.srcDir("src/commonTest/kotlin")
         }
     }
 }
