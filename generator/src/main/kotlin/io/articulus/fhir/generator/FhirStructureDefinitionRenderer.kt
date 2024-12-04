@@ -10,7 +10,10 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.UNIT
+import com.squareup.kotlinpoet.WildcardTypeName.Companion.producerOf
 import java.io.File
 import java.util.Locale
 
@@ -18,7 +21,18 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
     private val log by logger()
 
+    private fun FhirClass.isResource(): Boolean {
+        return this.superClass?.name == "Resource" || this.superClass?.isResource() == true
+    }
+
+    private fun FhirClass.isQuantity(): Boolean {
+        return this.superClass?.name == "Quantity" || this.superClass?.isQuantity() == true
+    }
+
     fun render() {
+        val resourcesSubClasses = mutableListOf<FhirClass>()
+        val quantitySubClasses = mutableListOf<FhirClass>()
+
         renderManualValueClasses()
         renderManualClasses()
         renderManualInterfaces()
@@ -80,7 +94,19 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                                 extra.build().writeTo(File(dir))
                             }
                         }
-                    } else buildClass(c, packages, spec.topLevelClasses)
+                    } else {
+                        kmpOnly {
+                            if (c.isResource()) {
+                                resourcesSubClasses.add(c)
+                            }
+
+                            if (c.isQuantity()) {
+                                quantitySubClasses.add(c)
+                            }
+                        }
+
+                        buildClass(c, packages, spec.topLevelClasses)
+                    }
 
                     out.addType(classBody)
                     log.debug("Building class {}", c.name)
@@ -88,6 +114,115 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                     out.build().writeTo(File(dir))
                 }
         }
+
+        kmpOnly {
+            renderSerializationModule(
+                resourcesSubClasses.sortedBy { klass -> klass.name },
+                quantitySubClasses.sortedBy { klass -> klass.name }
+            )
+        }
+    }
+
+    private fun renderSerializationModule(
+        resourcesClasses: List<FhirClass>,
+        quantitySubClasses: List<FhirClass>
+    ) {
+        val name = "SerializationModule"
+        val resourcesClassName = ClassName("${Constants.getBasePackageName()}.${Settings.modelVersion}", "Resource")
+        val quantityClassName = ClassName("${Constants.getBasePackageName()}.${Settings.modelVersion}", "Quantity")
+        val genericQuantityClassName = ClassName("${Constants.getBasePackageName()}.${Settings.modelVersion}.quantity", "Quantity")
+        val outResourceClassName = producerOf(resourcesClassName)
+
+        val quantitySerializer = TypeSpec.objectBuilder("QuantitySerializer")
+            .addSuperinterface(ClassName("kotlinx.serialization", "KSerializer").parameterizedBy(quantityClassName))
+            .addProperty(
+                PropertySpec.builder("descriptor", ClassName("kotlinx.serialization.descriptors", "SerialDescriptor"))
+                    .addModifiers(KModifier.OVERRIDE)
+                    .initializer(
+                        CodeBlock.builder()
+                            .addStatement("%T.serializer().descriptor", genericQuantityClassName)
+                            .build()
+                    )
+                    .build()
+            )
+            .addFunction(
+                FunSpec.builder("deserialize")
+                    .addModifiers(KModifier.OVERRIDE)
+                    .addParameter("decoder", ClassName("kotlinx.serialization.encoding", "Decoder"))
+                    .returns(quantityClassName)
+                    .addStatement("return decoder.decodeSerializableValue(%T.serializer())", genericQuantityClassName)
+                    .build()
+            )
+            .addFunction(
+                FunSpec.builder("serialize")
+                    .addModifiers(KModifier.OVERRIDE)
+                    .addParameter(
+                        "encoder",
+                        ClassName("kotlinx.serialization.encoding", "Encoder")
+                    )
+                    .addParameter(
+                        "value",
+                        quantityClassName
+                    )
+                    .returns(UNIT)
+                    .beginControlFlow("return when (value) {")
+                    .apply {
+                        quantitySubClasses.forEach { cls ->
+                            addStatement("is %T -> %T.serializer().serialize(encoder, value)", ClassName("${spec.packageName}.${cls.name.lowercase()}", cls.name), ClassName("${spec.packageName}.${cls.name.lowercase()}", cls.name))
+                        }
+                        addStatement("is %T -> %T.serializer().serialize(encoder, value)", genericQuantityClassName, genericQuantityClassName)
+                        addStatement("else -> error(\"Unknown Quantity type: \$value\")")
+                    }
+                    .endControlFlow()
+                    .build()
+            )
+            .build()
+
+
+        val resourceSerializer = TypeSpec.objectBuilder("ResourceSerializer")
+            .superclass(ClassName("io.icure.fhir.mapping.domain.fhir", "CustomJsonPolymorphicSerializer").parameterizedBy(ClassName("${Constants.getBasePackageName()}.${Settings.modelVersion}", "Resource")))
+            .addSuperclassConstructorParameter("%S, %S", "resourceType", "Resource")
+            .addFunction(
+                FunSpec.builder("getSerializerBySerialName")
+                    .addModifiers(KModifier.OVERRIDE)
+                    .addParameter("serialName", STRING)
+                    .returns(ClassName("kotlinx.serialization", "KSerializer").isNullable(true).parameterizedBy(outResourceClassName))
+                    .beginControlFlow("return when (serialName) {")
+                    .apply {
+                        resourcesClasses.forEach { cls ->
+                            addStatement("\"${cls.name}\" -> %T.serializer()", ClassName("${spec.packageName}.${cls.name.lowercase()}", cls.name))
+                        }
+                        addStatement("else -> error(\"Unknown Resource type: \$serialName\")")
+                    }
+                    .endControlFlow()
+                    .build()
+            )
+            .addFunction(
+                FunSpec.builder("getSerializerByClass")
+                    .addModifiers(KModifier.OVERRIDE)
+                    .addParameter(
+                        "kclass",
+                        ClassName("kotlin.reflect", "KClass")
+                            .isNullable(true)
+                            .parameterizedBy(outResourceClassName)
+                    )
+                    .returns(ClassName("kotlinx.serialization", "KSerializer").isNullable(true).parameterizedBy(outResourceClassName))
+                    .beginControlFlow("return when (kclass) {")
+                    .apply {
+                        resourcesClasses.forEach { cls ->
+                            addStatement("%T::class -> %T.serializer()", ClassName("${spec.packageName}.${cls.name.lowercase()}", cls.name), ClassName("${spec.packageName}.${cls.name.lowercase()}", cls.name))
+                        }
+                        addStatement("else -> error(\"Unknown resource type: \$kclass\")")
+                    }
+                    .endControlFlow()
+                    .build()
+            )
+            .build()
+
+        val out = FileSpec.builder(spec.packageName, name)
+        out.addType(quantitySerializer)
+        out.addType(resourceSerializer)
+        out.build().writeTo(File(Settings.destinationSrcDir))
     }
 
     private fun renderManualClasses() {
@@ -187,6 +322,24 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         cls.properties.toSortedMap().forEach { (_, prop) ->
             classBuilder.addProperty(makeProperty(prop, packages, true, false))
         }
+
+        kmpOnly {
+            if (cls.name == "Resource" || cls.name == "Quantity") {
+                classBuilder.addAnnotation(
+                    AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable"))
+                        .addMember(
+                            "with = %T::class",
+                            when (cls.name) {
+                                "Resource" -> ClassName(spec.packageName, "ResourceSerializer")
+                                "Quantity" -> ClassName(spec.packageName, "QuantitySerializer")
+                                else -> throw IllegalStateException("Unknown class name: ${cls.name}")
+                            }
+                        )
+                        .build()
+                )
+            }
+        }
+
         cls.superClass?.let {
             classBuilder.addSuperinterface(
                 ClassName(
@@ -208,6 +361,14 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         val classBuilder = TypeSpec.classBuilder(cls.name).addModifiers(KModifier.DATA)
 
         classBuilder.addAdditionalInterfaces(cls.name)
+
+        kmpOnly {
+            classBuilder.addAnnotation(
+                AnnotationSpec.builder(ClassName("kotlinx.serialization", "SerialName"))
+                    .addMember("\"${cls.name}\"")
+                    .build()
+            )
+        }
 
         val hierarchy = mutableListOf(cls)
         var marker = cls
