@@ -162,6 +162,13 @@ val targetMatrix = mapOf(
     "KMP" to listOf("${project.rootDir}/fhir-models/src/commonMain/kotlin", "${project.rootDir}/fhir-models/src/commonTest/kotlin", "${project.rootDir}/fhir-models/src/commonMain/resources/samples")
 )
 
+val filesToCopy = mapOf(
+    "JVM" to listOf(
+        "${project.rootDir}/fhir-models/src/commonMain/kotlin/io/icure/fhir/mapping/domain/fhir/ExactMeasure.kt" to
+            "${project.rootDir}/generator/gen/src/main/kotlin/io/icure/fhir/mapping/domain/fhir",
+    )
+)
+
 tasks {
     withType<Copy> {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -207,6 +214,12 @@ tasks {
                             version,
                             target
                         )
+                    }
+                }
+                filesToCopy[target]?.forEach { (src, dst) ->
+                    copy {
+                        from(src)
+                        into(dst)
                     }
                 }
             }
