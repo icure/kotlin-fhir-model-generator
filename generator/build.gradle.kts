@@ -15,7 +15,7 @@ plugins {
 val gitVersion: String? by project
 
 group = "io.icure.fhir"
-version = gitVersion ?: "0.0.1-SNAPSHOT"
+version = gitVersion ?: "1.0.0-RC.5"
 description = "Kotlin on FHIR Model Generator"
 
 application {
@@ -55,6 +55,7 @@ publishing {
                 password = repoPassword
             }
         }
+        mavenLocal()
     }
 }
 
