@@ -1,0 +1,36 @@
+//
+//  Generated from FHIR Version 5.0.0
+//
+package io.icure.fhir.mapping.domain.fhir.r5.coverageeligibilityresponse
+
+import io.icure.fhir.mapping.domain.fhir.r5.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r5.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r5.extension.Extension
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Processing errors
+ *
+ * Errors encountered during the processing of the request.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param code Error code detailing processing issues
+ */
+@SerialName("CoverageEligibilityResponseError")
+@Serializable
+public data class CoverageEligibilityResponseError(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * Error code detailing processing issues
+   */
+  public val code: CodeableConcept,
+  public val expression: List<String> = emptyList(),
+) : BackboneElement

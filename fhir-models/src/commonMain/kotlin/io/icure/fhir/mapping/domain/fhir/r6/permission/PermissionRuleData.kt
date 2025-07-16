@@ -1,0 +1,40 @@
+//
+//  Generated from FHIR Version 6.0.0-ballot1
+//
+package io.icure.fhir.mapping.domain.fhir.r6.permission
+
+import io.icure.fhir.mapping.domain.fhir.r6.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r6.coding.Coding
+import io.icure.fhir.mapping.domain.fhir.r6.expression.Expression
+import io.icure.fhir.mapping.domain.fhir.r6.extension.Extension
+import io.icure.fhir.mapping.domain.fhir.r6.period.Period
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * The selection criteria to identify data that is within scope of this provision
+ *
+ * A description or definition of which activities are allowed to be done on the data.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param expression Expression identifying the data
+ */
+@SerialName("PermissionRuleData")
+@Serializable
+public data class PermissionRuleData(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  public val resource: List<PermissionRuleDataResource> = emptyList(),
+  public val security: List<Coding> = emptyList(),
+  public val period: List<Period> = emptyList(),
+  /**
+   * Expression identifying the data
+   */
+  public val expression: Expression? = null,
+) : BackboneElement

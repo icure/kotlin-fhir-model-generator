@@ -1,0 +1,49 @@
+//
+//  Generated from FHIR Version 6.0.0-ballot1
+//
+package io.icure.fhir.mapping.domain.fhir.r6.devicedefinition
+
+import io.icure.fhir.mapping.domain.fhir.r6.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r6.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r6.extension.Extension
+import io.icure.fhir.mapping.domain.fhir.r6.relatedartifact.RelatedArtifact
+import io.icure.fhir.mapping.domain.fhir.r6.usagecontext.UsageContext
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Information aimed at providing directions for the usage of this model of device
+ *
+ * Information aimed at providing directions for the usage of this model of device.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param usageInstruction Detailed written and visual directions for the user on how to use the
+ * device
+ * @param intendedUse A description of the general purpose or medical use of the device or its
+ * function
+ */
+@SerialName("DeviceDefinitionGuideline")
+@Serializable
+public data class DeviceDefinitionGuideline(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  public val useContext: List<UsageContext> = emptyList(),
+  /**
+   * Detailed written and visual directions for the user on how to use the device
+   */
+  public val usageInstruction: String? = null,
+  public val relatedArtifact: List<RelatedArtifact> = emptyList(),
+  public val indication: List<CodeableConcept> = emptyList(),
+  public val contraindication: List<CodeableConcept> = emptyList(),
+  public val warning: List<CodeableConcept> = emptyList(),
+  /**
+   * A description of the general purpose or medical use of the device or its function
+   */
+  public val intendedUse: String? = null,
+) : BackboneElement

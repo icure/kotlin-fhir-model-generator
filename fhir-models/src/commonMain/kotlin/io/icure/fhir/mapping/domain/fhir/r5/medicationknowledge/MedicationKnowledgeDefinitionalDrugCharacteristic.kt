@@ -1,0 +1,62 @@
+//
+//  Generated from FHIR Version 5.0.0
+//
+package io.icure.fhir.mapping.domain.fhir.r5.medicationknowledge
+
+import io.icure.fhir.mapping.domain.fhir.r5.Quantity
+import io.icure.fhir.mapping.domain.fhir.r5.attachment.Attachment
+import io.icure.fhir.mapping.domain.fhir.r5.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r5.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r5.extension.Extension
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Specifies descriptive properties of the medicine
+ *
+ * Specifies descriptive properties of the medicine, such as color, shape, imprints, etc.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param type Code specifying the type of characteristic of medication
+ * @param valueCodeableConcept Description of the characteristic
+ * @param valueString Description of the characteristic
+ * @param valueQuantity Description of the characteristic
+ * @param valueBase64Binary Description of the characteristic
+ * @param valueAttachment Description of the characteristic
+ */
+@SerialName("MedicationKnowledgeDefinitionalDrugCharacteristic")
+@Serializable
+public data class MedicationKnowledgeDefinitionalDrugCharacteristic(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * Code specifying the type of characteristic of medication
+   */
+  public val type: CodeableConcept? = null,
+  /**
+   * Description of the characteristic
+   */
+  public val valueCodeableConcept: CodeableConcept? = null,
+  /**
+   * Description of the characteristic
+   */
+  public val valueString: String? = null,
+  /**
+   * Description of the characteristic
+   */
+  public val valueQuantity: Quantity? = null,
+  /**
+   * Description of the characteristic
+   */
+  public val valueBase64Binary: String? = null,
+  /**
+   * Description of the characteristic
+   */
+  public val valueAttachment: Attachment? = null,
+) : BackboneElement

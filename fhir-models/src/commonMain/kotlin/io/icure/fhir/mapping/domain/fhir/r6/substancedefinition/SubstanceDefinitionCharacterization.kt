@@ -1,0 +1,50 @@
+//
+//  Generated from FHIR Version 6.0.0-ballot1
+//
+package io.icure.fhir.mapping.domain.fhir.r6.substancedefinition
+
+import io.icure.fhir.mapping.domain.fhir.r6.attachment.Attachment
+import io.icure.fhir.mapping.domain.fhir.r6.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r6.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r6.extension.Extension
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * General specifications for this substance
+ *
+ * General specifications for this substance.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param technique The method used to find the characterization e.g. HPLC
+ * @param form Describes the nature of the chemical entity and explains, for instance, whether this
+ * is a base or a salt form
+ * @param description The description or justification in support of the interpretation of the data
+ * file
+ */
+@SerialName("SubstanceDefinitionCharacterization")
+@Serializable
+public data class SubstanceDefinitionCharacterization(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * The method used to find the characterization e.g. HPLC
+   */
+  public val technique: CodeableConcept? = null,
+  /**
+   * Describes the nature of the chemical entity and explains, for instance, whether this is a base
+   * or a salt form
+   */
+  public val form: CodeableConcept? = null,
+  /**
+   * The description or justification in support of the interpretation of the data file
+   */
+  public val description: String? = null,
+  public val `file`: List<Attachment> = emptyList(),
+) : BackboneElement

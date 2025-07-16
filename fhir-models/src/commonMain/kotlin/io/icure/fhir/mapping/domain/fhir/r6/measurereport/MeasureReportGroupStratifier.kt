@@ -1,0 +1,42 @@
+//
+//  Generated from FHIR Version 6.0.0-ballot1
+//
+package io.icure.fhir.mapping.domain.fhir.r6.measurereport
+
+import io.icure.fhir.mapping.domain.fhir.r6.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r6.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r6.extension.Extension
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Stratification results
+ *
+ * When a measure includes multiple stratifiers, there will be a stratifier group for each
+ * stratifier defined by the measure.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param linkId Pointer to specific stratifier from Measure
+ * @param code What stratifier of the group
+ */
+@SerialName("MeasureReportGroupStratifier")
+@Serializable
+public data class MeasureReportGroupStratifier(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * Pointer to specific stratifier from Measure
+   */
+  public val linkId: String? = null,
+  /**
+   * What stratifier of the group
+   */
+  public val code: CodeableConcept? = null,
+  public val stratum: List<MeasureReportGroupStratifierStratum> = emptyList(),
+) : BackboneElement

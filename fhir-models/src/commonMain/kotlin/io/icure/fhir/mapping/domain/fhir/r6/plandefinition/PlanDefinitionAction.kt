@@ -1,0 +1,174 @@
+//
+//  Generated from FHIR Version 6.0.0-ballot1
+//
+package io.icure.fhir.mapping.domain.fhir.r6.plandefinition
+
+import io.icure.fhir.mapping.domain.fhir.r6.age.Age
+import io.icure.fhir.mapping.domain.fhir.r6.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r6.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r6.codeablereference.CodeableReference
+import io.icure.fhir.mapping.domain.fhir.r6.duration.Duration
+import io.icure.fhir.mapping.domain.fhir.r6.extension.Extension
+import io.icure.fhir.mapping.domain.fhir.r6.range.Range
+import io.icure.fhir.mapping.domain.fhir.r6.reference.Reference
+import io.icure.fhir.mapping.domain.fhir.r6.relatedartifact.RelatedArtifact
+import io.icure.fhir.mapping.domain.fhir.r6.timing.Timing
+import io.icure.fhir.mapping.domain.fhir.r6.triggerdefinition.TriggerDefinition
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Action defined by the plan
+ *
+ * An action or group of actions to be taken as part of the plan. For example, in clinical care, an
+ * action would be to prescribe a particular indicated medication, or perform a particular test as
+ * appropriate. In pharmaceutical quality, an action would be the test that needs to be performed on a
+ * drug product as defined in the quality specification.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param linkId Unique id for the action in the PlanDefinition
+ * @param prefix User-visible prefix for the action (e.g. 1. or A.)
+ * @param title User-visible title
+ * @param description Brief description of the action
+ * @param textEquivalent Static text equivalent of the action, used if the dynamic aspects cannot be
+ * interpreted by the receiving system
+ * @param priority routine | urgent | asap | stat
+ * @param code Code representing the meaning of the action or sub-actions
+ * @param subjectCodeableConcept Type of individual the action is focused on
+ * @param subjectReference Type of individual the action is focused on
+ * @param subjectCanonical Type of individual the action is focused on
+ * @param timingAge When the action should take place
+ * @param timingDuration When the action should take place
+ * @param timingRange When the action should take place
+ * @param timingTiming When the action should take place
+ * @param location Where it should happen
+ * @param type create | update | remove | fire-event
+ * @param groupingBehavior visual-group | logical-group | sentence-group
+ * @param selectionBehavior any | all | all-or-none | exactly-one | at-most-one | one-or-more
+ * @param requiredBehavior must | could | must-unless-documented
+ * @param precheckBehavior yes | no
+ * @param cardinalityBehavior single | multiple
+ * @param definitionCanonical Description of the activity to be performed
+ * @param definitionUri Description of the activity to be performed
+ * @param transform Transform to apply the template
+ */
+@SerialName("PlanDefinitionAction")
+@Serializable
+public data class PlanDefinitionAction(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * Unique id for the action in the PlanDefinition
+   */
+  public val linkId: String? = null,
+  /**
+   * User-visible prefix for the action (e.g. 1. or A.)
+   */
+  public val prefix: String? = null,
+  /**
+   * User-visible title
+   */
+  public val title: String? = null,
+  /**
+   * Brief description of the action
+   */
+  public val description: String? = null,
+  /**
+   * Static text equivalent of the action, used if the dynamic aspects cannot be interpreted by the
+   * receiving system
+   */
+  public val textEquivalent: String? = null,
+  /**
+   * routine | urgent | asap | stat
+   */
+  public val priority: String? = null,
+  /**
+   * Code representing the meaning of the action or sub-actions
+   */
+  public val code: CodeableConcept? = null,
+  public val reason: List<CodeableConcept> = emptyList(),
+  public val documentation: List<RelatedArtifact> = emptyList(),
+  public val goalId: List<String> = emptyList(),
+  /**
+   * Type of individual the action is focused on
+   */
+  public val subjectCodeableConcept: CodeableConcept? = null,
+  /**
+   * Type of individual the action is focused on
+   */
+  public val subjectReference: Reference? = null,
+  /**
+   * Type of individual the action is focused on
+   */
+  public val subjectCanonical: String? = null,
+  public val trigger: List<TriggerDefinition> = emptyList(),
+  public val condition: List<PlanDefinitionActionCondition> = emptyList(),
+  public val input: List<PlanDefinitionActionInput> = emptyList(),
+  public val output: List<PlanDefinitionActionOutput> = emptyList(),
+  public val relatedAction: List<PlanDefinitionActionRelatedAction> = emptyList(),
+  /**
+   * When the action should take place
+   */
+  public val timingAge: Age? = null,
+  /**
+   * When the action should take place
+   */
+  public val timingDuration: Duration? = null,
+  /**
+   * When the action should take place
+   */
+  public val timingRange: Range? = null,
+  /**
+   * When the action should take place
+   */
+  public val timingTiming: Timing? = null,
+  /**
+   * Where it should happen
+   */
+  public val location: CodeableReference? = null,
+  public val participant: List<PlanDefinitionActionParticipant> = emptyList(),
+  /**
+   * create | update | remove | fire-event
+   */
+  public val type: CodeableConcept? = null,
+  /**
+   * visual-group | logical-group | sentence-group
+   */
+  public val groupingBehavior: String? = null,
+  /**
+   * any | all | all-or-none | exactly-one | at-most-one | one-or-more
+   */
+  public val selectionBehavior: String? = null,
+  /**
+   * must | could | must-unless-documented
+   */
+  public val requiredBehavior: String? = null,
+  /**
+   * yes | no
+   */
+  public val precheckBehavior: String? = null,
+  /**
+   * single | multiple
+   */
+  public val cardinalityBehavior: String? = null,
+  /**
+   * Description of the activity to be performed
+   */
+  public val definitionCanonical: String? = null,
+  /**
+   * Description of the activity to be performed
+   */
+  public val definitionUri: String? = null,
+  /**
+   * Transform to apply the template
+   */
+  public val transform: String? = null,
+  public val dynamicValue: List<PlanDefinitionActionDynamicValue> = emptyList(),
+  public val action: List<PlanDefinitionAction> = emptyList(),
+) : BackboneElement
