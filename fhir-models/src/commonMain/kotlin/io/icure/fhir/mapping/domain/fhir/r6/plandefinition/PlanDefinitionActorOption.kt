@@ -1,0 +1,53 @@
+//
+//  Generated from FHIR Version 6.0.0-ballot1
+//
+package io.icure.fhir.mapping.domain.fhir.r6.plandefinition
+
+import io.icure.fhir.mapping.domain.fhir.r6.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r6.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r6.extension.Extension
+import io.icure.fhir.mapping.domain.fhir.r6.reference.Reference
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Who or what can be this actor
+ *
+ * The characteristics of the candidates that could serve as the actor.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param type careteam | device | group | healthcareservice | location | organization | patient |
+ * practitioner | practitionerrole | relatedperson
+ * @param typeCanonical Who or what can participate
+ * @param typeReference Who or what can participate
+ * @param role E.g. Nurse, Surgeon, Parent
+ */
+@SerialName("PlanDefinitionActorOption")
+@Serializable
+public data class PlanDefinitionActorOption(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * careteam | device | group | healthcareservice | location | organization | patient |
+   * practitioner | practitionerrole | relatedperson
+   */
+  public val type: String? = null,
+  /**
+   * Who or what can participate
+   */
+  public val typeCanonical: String? = null,
+  /**
+   * Who or what can participate
+   */
+  public val typeReference: Reference? = null,
+  /**
+   * E.g. Nurse, Surgeon, Parent
+   */
+  public val role: CodeableConcept? = null,
+) : BackboneElement

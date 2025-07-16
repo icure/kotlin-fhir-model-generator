@@ -1,6 +1,9 @@
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import java.util.Properties
+import kotlin.apply
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform) apply true
@@ -8,6 +11,7 @@ plugins {
     alias(libs.plugins.androidLibrary) apply true
     alias(libs.plugins.vanniktech.mavenPublish) apply true
     alias(libs.plugins.kotest.multiplatform)
+    id("maven-publish")
     signing
 }
 
@@ -16,19 +20,87 @@ val gitVersion: String? by project
 group = "com.icure"
 version = gitVersion ?: "1.0.0-RC.13"
 
+private fun Project.getLocalProperties() =
+    Properties().apply {
+        kotlin.runCatching {
+            load(rootProject.file("local.properties").reader())
+        }
+    }
+
 kotlin {
-    jvm()
+    val localProperties = getLocalProperties()
+
+    jvm {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_1_8
+        }
+    }
     androidTarget {
         publishLibraryVariants("release")
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
-    iosSimulatorArm64()
     iosX64()
     iosArm64()
-    linuxX64()
+    iosSimulatorArm64()
+
+    val frameworkName = rootProject.name.replaceFirstChar { it.uppercase() }.let { "${it}Kotlin" }
+    val xcf = XCFramework(frameworkName)
+    val iosSimulators = listOf(
+        iosX64(),
+        iosSimulatorArm64()
+    )
+    val iosAll = iosSimulators + iosArm64()
+    iosAll.forEach { target ->
+        target.binaries.framework {
+            baseName = frameworkName
+            xcf.add(this)
+        }
+    }
+    iosSimulators.forEach { target ->
+        target.testRuns.forEach { testRun ->
+            (localProperties["ios.simulator"] as? String)?.let { testRun.deviceId = it }
+        }
+    }
+    macosX64()
+    macosArm64()
+
+    val linuxArm64Target = linuxArm64()
+    val linuxX64Target = linuxX64()
+    listOf(
+        linuxX64Target,
+        linuxArm64Target
+    ).onEach { target ->
+        target.binaries {
+            all {
+                freeCompilerArgs += listOf("-linker-option", "--allow-shlib-undefined")
+                localProperties["cinteropsLibsDir"]?.also { allDirs ->
+                    (allDirs as String).split(";").forEach {
+                        linkerOpts.add(0, "-L$it")
+                    }
+                }
+            }
+        }
+    }
+    mingwX64()
+    applyDefaultHierarchyTemplate()
+
+    js(IR) {
+        moduleName = rootProject.name
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                    useFirefoxHeadless()
+                }
+            }
+        }
+        nodejs { }
+        binaries.library()
+        generateTypeScriptDefinitions()
+        useEsModules()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -51,7 +123,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.jetbrains.kotlinx.multiplatform.library.template"
+    namespace = "com.icure.fhir.models"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()

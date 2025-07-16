@@ -1,0 +1,52 @@
+//
+//  Generated from FHIR Version 5.0.0
+//
+package io.icure.fhir.mapping.domain.fhir.r5.devicedefinition
+
+import io.icure.fhir.mapping.domain.fhir.r5.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r5.extension.Extension
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Regulatory identifier(s) associated with this device
+ *
+ * Identifier associated with the regulatory documentation (certificates, technical documentation,
+ * post-market surveillance documentation and reports) of a set of device models sharing the same
+ * intended purpose, risk class and essential design and manufacturing characteristics. One example is
+ * the Basic UDI-DI in Europe.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param type basic | master | license
+ * @param deviceIdentifier The identifier itself
+ * @param issuer The organization that issued this identifier
+ * @param jurisdiction The jurisdiction to which the deviceIdentifier applies
+ */
+@SerialName("DeviceDefinitionRegulatoryIdentifier")
+@Serializable
+public data class DeviceDefinitionRegulatoryIdentifier(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * basic | master | license
+   */
+  public val type: String? = null,
+  /**
+   * The identifier itself
+   */
+  public val deviceIdentifier: String? = null,
+  /**
+   * The organization that issued this identifier
+   */
+  public val issuer: String? = null,
+  /**
+   * The jurisdiction to which the deviceIdentifier applies
+   */
+  public val jurisdiction: String? = null,
+) : BackboneElement

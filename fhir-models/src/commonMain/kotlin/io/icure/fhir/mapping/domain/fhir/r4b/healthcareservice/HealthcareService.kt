@@ -1,0 +1,115 @@
+//
+//  Generated from FHIR Version 4.3.0
+//
+package io.icure.fhir.mapping.domain.fhir.r4b.healthcareservice
+
+import io.icure.fhir.mapping.domain.fhir.r4b.DomainResource
+import io.icure.fhir.mapping.domain.fhir.r4b.Meta
+import io.icure.fhir.mapping.domain.fhir.r4b.Resource
+import io.icure.fhir.mapping.domain.fhir.r4b.attachment.Attachment
+import io.icure.fhir.mapping.domain.fhir.r4b.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r4b.contactpoint.ContactPoint
+import io.icure.fhir.mapping.domain.fhir.r4b.extension.Extension
+import io.icure.fhir.mapping.domain.fhir.r4b.identifier.Identifier
+import io.icure.fhir.mapping.domain.fhir.r4b.narrative.Narrative
+import io.icure.fhir.mapping.domain.fhir.r4b.reference.Reference
+import kotlin.Boolean
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * The details of a healthcare service available at a location
+ *
+ * The details of a healthcare service available at a location.
+ *
+ * @param id Logical id of this artifact
+ * @param meta Metadata about the resource
+ * @param implicitRules A set of rules under which this content was created
+ * @param language Language of the resource content
+ * @param text Text summary of the resource, for human interpretation
+ * @param active Whether this HealthcareService record is in active use
+ * @param providedBy Organization that provides this service
+ * @param name Description of service as presented to a consumer while searching
+ * @param comment Additional description and/or any specific issues not covered elsewhere
+ * @param extraDetails Extra details about the service that can't be placed in the other fields
+ * @param photo Facilitates quick identification of the service
+ * @param appointmentRequired If an appointment is required for access to this service
+ * @param availabilityExceptions Description of availability exceptions
+ */
+@SerialName("HealthcareService")
+@Serializable
+public data class HealthcareService(
+  /**
+   * Logical id of this artifact
+   */
+  override val id: String? = null,
+  /**
+   * Metadata about the resource
+   */
+  override val meta: Meta? = null,
+  /**
+   * A set of rules under which this content was created
+   */
+  override val implicitRules: String? = null,
+  /**
+   * Language of the resource content
+   */
+  override val language: String? = null,
+  /**
+   * Text summary of the resource, for human interpretation
+   */
+  override val text: Narrative? = null,
+  override val contained: List<Resource> = emptyList(),
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  public val identifier: List<Identifier> = emptyList(),
+  /**
+   * Whether this HealthcareService record is in active use
+   */
+  public val active: Boolean? = null,
+  /**
+   * Organization that provides this service
+   */
+  public val providedBy: Reference? = null,
+  public val category: List<CodeableConcept> = emptyList(),
+  public val type: List<CodeableConcept> = emptyList(),
+  public val specialty: List<CodeableConcept> = emptyList(),
+  public val location: List<Reference> = emptyList(),
+  /**
+   * Description of service as presented to a consumer while searching
+   */
+  public val name: String? = null,
+  /**
+   * Additional description and/or any specific issues not covered elsewhere
+   */
+  public val comment: String? = null,
+  /**
+   * Extra details about the service that can't be placed in the other fields
+   */
+  public val extraDetails: String? = null,
+  /**
+   * Facilitates quick identification of the service
+   */
+  public val photo: Attachment? = null,
+  public val telecom: List<ContactPoint> = emptyList(),
+  public val coverageArea: List<Reference> = emptyList(),
+  public val serviceProvisionCode: List<CodeableConcept> = emptyList(),
+  public val eligibility: List<HealthcareServiceEligibility> = emptyList(),
+  public val program: List<CodeableConcept> = emptyList(),
+  public val characteristic: List<CodeableConcept> = emptyList(),
+  public val communication: List<CodeableConcept> = emptyList(),
+  public val referralMethod: List<CodeableConcept> = emptyList(),
+  /**
+   * If an appointment is required for access to this service
+   */
+  public val appointmentRequired: Boolean? = null,
+  public val availableTime: List<HealthcareServiceAvailableTime> = emptyList(),
+  public val notAvailable: List<HealthcareServiceNotAvailable> = emptyList(),
+  /**
+   * Description of availability exceptions
+   */
+  public val availabilityExceptions: String? = null,
+  public val endpoint: List<Reference> = emptyList(),
+) : DomainResource

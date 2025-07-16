@@ -1,0 +1,166 @@
+//
+//  Generated from FHIR Version 4.0.1-9346c8cc45
+//
+package io.icure.fhir.mapping.domain.fhir.r4.immunization
+
+import io.icure.fhir.mapping.domain.fhir.r4.DomainResource
+import io.icure.fhir.mapping.domain.fhir.r4.Meta
+import io.icure.fhir.mapping.domain.fhir.r4.Quantity
+import io.icure.fhir.mapping.domain.fhir.r4.Resource
+import io.icure.fhir.mapping.domain.fhir.r4.`annotation`.Annotation
+import io.icure.fhir.mapping.domain.fhir.r4.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r4.extension.Extension
+import io.icure.fhir.mapping.domain.fhir.r4.identifier.Identifier
+import io.icure.fhir.mapping.domain.fhir.r4.narrative.Narrative
+import io.icure.fhir.mapping.domain.fhir.r4.reference.Reference
+import io.icure.fhir.mapping.domain.fhir.r4.servicelike.ServiceLike
+import kotlin.Boolean
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Immunization event information
+ *
+ * Describes the event of a patient being administered a vaccine or a record of an immunization as
+ * reported by a patient, a clinician or another party.
+ *
+ * @param id Logical id of this artifact
+ * @param meta Metadata about the resource
+ * @param implicitRules A set of rules under which this content was created
+ * @param language Language of the resource content
+ * @param text Text summary of the resource, for human interpretation
+ * @param status completed | entered-in-error | not-done
+ * @param statusReason Reason not done
+ * @param vaccineCode Vaccine product administered
+ * @param patient Who was immunized
+ * @param encounter Encounter immunization was part of
+ * @param occurrenceDateTime Vaccine administration date
+ * @param occurrenceString Vaccine administration date
+ * @param recorded When the immunization was first captured in the subject's record
+ * @param primarySource Indicates context the data was recorded in
+ * @param reportOrigin Indicates the source of a secondarily reported record
+ * @param location Where immunization occurred
+ * @param manufacturer Vaccine manufacturer
+ * @param lotNumber Vaccine lot number
+ * @param expirationDate Vaccine expiration date
+ * @param site Body site vaccine  was administered
+ * @param route How vaccine entered body
+ * @param doseQuantity Amount of vaccine administered
+ * @param isSubpotent Dose potency
+ * @param fundingSource Funding source for the vaccine
+ */
+@SerialName("Immunization")
+@Serializable
+public data class Immunization(
+  /**
+   * Logical id of this artifact
+   */
+  override val id: String? = null,
+  /**
+   * Metadata about the resource
+   */
+  override val meta: Meta? = null,
+  /**
+   * A set of rules under which this content was created
+   */
+  override val implicitRules: String? = null,
+  /**
+   * Language of the resource content
+   */
+  override val language: String? = null,
+  /**
+   * Text summary of the resource, for human interpretation
+   */
+  override val text: Narrative? = null,
+  override val contained: List<Resource> = emptyList(),
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  public val identifier: List<Identifier> = emptyList(),
+  /**
+   * completed | entered-in-error | not-done
+   */
+  public val status: String? = null,
+  /**
+   * Reason not done
+   */
+  public val statusReason: CodeableConcept? = null,
+  /**
+   * Vaccine product administered
+   */
+  public val vaccineCode: CodeableConcept,
+  /**
+   * Who was immunized
+   */
+  public val patient: Reference,
+  /**
+   * Encounter immunization was part of
+   */
+  public val encounter: Reference? = null,
+  /**
+   * Vaccine administration date
+   */
+  public val occurrenceDateTime: String? = null,
+  /**
+   * Vaccine administration date
+   */
+  public val occurrenceString: String? = null,
+  /**
+   * When the immunization was first captured in the subject's record
+   */
+  public val recorded: String? = null,
+  /**
+   * Indicates context the data was recorded in
+   */
+  public val primarySource: Boolean? = null,
+  /**
+   * Indicates the source of a secondarily reported record
+   */
+  public val reportOrigin: CodeableConcept? = null,
+  /**
+   * Where immunization occurred
+   */
+  public val location: Reference? = null,
+  /**
+   * Vaccine manufacturer
+   */
+  public val manufacturer: Reference? = null,
+  /**
+   * Vaccine lot number
+   */
+  public val lotNumber: String? = null,
+  /**
+   * Vaccine expiration date
+   */
+  public val expirationDate: String? = null,
+  /**
+   * Body site vaccine  was administered
+   */
+  public val site: CodeableConcept? = null,
+  /**
+   * How vaccine entered body
+   */
+  public val route: CodeableConcept? = null,
+  /**
+   * Amount of vaccine administered
+   */
+  public val doseQuantity: Quantity? = null,
+  public val performer: List<ImmunizationPerformer> = emptyList(),
+  public val note: List<Annotation> = emptyList(),
+  public val reasonCode: List<CodeableConcept> = emptyList(),
+  public val reasonReference: List<Reference> = emptyList(),
+  /**
+   * Dose potency
+   */
+  public val isSubpotent: Boolean? = null,
+  public val subpotentReason: List<CodeableConcept> = emptyList(),
+  public val education: List<ImmunizationEducation> = emptyList(),
+  public val programEligibility: List<CodeableConcept> = emptyList(),
+  /**
+   * Funding source for the vaccine
+   */
+  public val fundingSource: CodeableConcept? = null,
+  public val reaction: List<ImmunizationReaction> = emptyList(),
+  public val protocolApplied: List<ImmunizationProtocolApplied> = emptyList(),
+) : ServiceLike, DomainResource

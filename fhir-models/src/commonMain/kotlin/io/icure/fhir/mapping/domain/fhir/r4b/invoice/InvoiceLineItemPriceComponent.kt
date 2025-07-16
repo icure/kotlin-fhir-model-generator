@@ -1,0 +1,56 @@
+//
+//  Generated from FHIR Version 4.3.0
+//
+package io.icure.fhir.mapping.domain.fhir.r4b.invoice
+
+import io.icure.fhir.mapping.domain.fhir.r4b.backboneelement.BackboneElement
+import io.icure.fhir.mapping.domain.fhir.r4b.codeableconcept.CodeableConcept
+import io.icure.fhir.mapping.domain.fhir.r4b.extension.Extension
+import io.icure.fhir.mapping.domain.fhir.r4b.money.Money
+import kotlin.Float
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Components of total line item price
+ *
+ * The price for a ChargeItem may be calculated as a base price with surcharges/deductions that
+ * apply in certain conditions. A ChargeItemDefinition resource that defines the prices, factors and
+ * conditions that apply to a billing code is currently under development. The priceComponent element
+ * can be used to offer transparency to the recipient of the Invoice as to how the prices have been
+ * calculated.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param type base | surcharge | deduction | discount | tax | informational
+ * @param code Code identifying the specific component
+ * @param factor Factor used for calculating this component
+ * @param amount Monetary amount associated with this component
+ */
+@SerialName("InvoiceLineItemPriceComponent")
+@Serializable
+public data class InvoiceLineItemPriceComponent(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * base | surcharge | deduction | discount | tax | informational
+   */
+  public val type: String? = null,
+  /**
+   * Code identifying the specific component
+   */
+  public val code: CodeableConcept? = null,
+  /**
+   * Factor used for calculating this component
+   */
+  public val factor: Float? = null,
+  /**
+   * Monetary amount associated with this component
+   */
+  public val amount: Money? = null,
+) : BackboneElement
