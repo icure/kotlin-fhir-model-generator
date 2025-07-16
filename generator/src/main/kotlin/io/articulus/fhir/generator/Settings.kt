@@ -70,6 +70,9 @@ object Settings {
                 "http://hl7.org/fhirpath/system.string" to "String"
         )
 
+        val externalPackages = mapOf(
+                "ExactMeasure" to "io.icure.fhir.mapping.domain.fhir"
+        )
 
         val primitives = listOf(
                 "String",
@@ -116,6 +119,10 @@ object Settings {
 
         val manualValueClasses = mapOf<String, Pair<String, Pair<String, String>>>(
 //                "Xhtml" to ("s" to Pair("String", "s"))
+        )
+
+        val manualProperties = mapOf(
+                ("Quantity" to "value") to "ExactMeasure"
         )
 
         val forcedImplementedInterfaces = listOf(
