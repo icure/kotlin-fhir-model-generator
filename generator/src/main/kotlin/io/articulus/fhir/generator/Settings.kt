@@ -121,8 +121,8 @@ object Settings {
 //                "Xhtml" to ("s" to Pair("String", "s"))
         )
 
-        val manualProperties = mapOf(
-                ("Quantity" to "value") to "ExactMeasure"
+        val manualProperties: Map<Pair<String, String>, String> = mapOf(
+                ("Quantity" to "value") to "FloatString"
         )
 
         val forcedImplementedInterfaces = listOf(
