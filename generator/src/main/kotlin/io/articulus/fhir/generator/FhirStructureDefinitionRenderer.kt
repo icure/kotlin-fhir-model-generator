@@ -245,12 +245,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
     private fun renderManualValueClasses() {
         Settings.manualValueClasses.forEach { (name, property) ->
-            val packageName = spec.packageName + ".${name.lowercase()}"
-            val out = FileSpec.builder(packageName, name)
+            val out = FileSpec.builder(spec.packageName, name)
             val classBuilder = TypeSpec.classBuilder(name).addModifiers(KModifier.VALUE)
 
             val (propName, typeInfo) = property
-            val className = ClassName(packageName, typeInfo.first)
+            val className = ClassName(spec.packageName, typeInfo.first)
             val propBuilder = PropertySpec.builder(propName, className)
             if (typeInfo.second.isNotBlank()) {
                 propBuilder.initializer(typeInfo.second)
