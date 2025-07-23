@@ -3,9 +3,9 @@
 //
 package io.icure.fhir.mapping.domain.fhir.r4.count
 
+import io.icure.fhir.mapping.domain.fhir.FloatString
 import io.icure.fhir.mapping.domain.fhir.r4.Quantity
 import io.icure.fhir.mapping.domain.fhir.r4.extension.Extension
-import kotlin.Float
 import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
@@ -36,7 +36,7 @@ public data class Count(
   /**
    * Numerical value (with implicit precision)
    */
-  override val `value`: Float? = null,
+  override val `value`: FloatString? = null,
   /**
    * < | <= | >= | > - how to understand the value
    */

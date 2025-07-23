@@ -3,9 +3,9 @@
 //
 package io.icure.fhir.mapping.domain.fhir.r4b.duration
 
+import io.icure.fhir.mapping.domain.fhir.FloatString
 import io.icure.fhir.mapping.domain.fhir.r4b.Quantity
 import io.icure.fhir.mapping.domain.fhir.r4b.extension.Extension
-import kotlin.Float
 import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
@@ -34,7 +34,7 @@ public data class Duration(
   /**
    * Numerical value (with implicit precision)
    */
-  override val `value`: Float? = null,
+  override val `value`: FloatString? = null,
   /**
    * < | <= | >= | > - how to understand the value
    */

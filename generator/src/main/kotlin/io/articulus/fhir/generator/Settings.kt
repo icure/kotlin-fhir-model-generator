@@ -70,9 +70,14 @@ object Settings {
                 "http://hl7.org/fhirpath/system.string" to "String"
         )
 
-        val externalPackages = mapOf(
-                "ExactMeasure" to "io.icure.fhir.mapping.domain.fhir"
-        )
+        val externalPackages: Map<String, String> by lazy {
+                mapOf(
+                        when(target) {
+                                GenerationTarget.JVM -> "FloatString" to "io.icure.fhir.mapping.domain.fhir.xml"
+                                GenerationTarget.KMP -> "FloatString" to "io.icure.fhir.mapping.domain.fhir"
+                        }
+                )
+        }
 
         val primitives = listOf(
                 "String",

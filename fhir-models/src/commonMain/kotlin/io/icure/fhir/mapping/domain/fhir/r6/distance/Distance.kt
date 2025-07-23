@@ -3,9 +3,9 @@
 //
 package io.icure.fhir.mapping.domain.fhir.r6.distance
 
+import io.icure.fhir.mapping.domain.fhir.FloatString
 import io.icure.fhir.mapping.domain.fhir.r6.Quantity
 import io.icure.fhir.mapping.domain.fhir.r6.extension.Extension
-import kotlin.Float
 import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
@@ -34,7 +34,7 @@ public data class Distance(
   /**
    * Numerical value (with implicit precision)
    */
-  override val `value`: Float? = null,
+  override val `value`: FloatString? = null,
   /**
    * < | <= | >= | > | ad - how to understand the value
    */

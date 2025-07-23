@@ -15,7 +15,7 @@ plugins {
 val gitVersion: String? by project
 
 group = "io.icure.fhir"
-version = gitVersion ?: "1.0.0-RC.5"
+version = gitVersion ?: "1.0.0-RC.6"
 description = "Kotlin on FHIR Model Generator"
 
 application {
@@ -34,6 +34,12 @@ tasks.register<Jar>("api-jar") {
     from(sourceSets.main.get().output.classesDirs)
 }
 
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from("gen/src/main/kotlin")
+    from(sourceSets.main.get().output.classesDirs)
+}
+
 tasks.withType<GenerateModuleMetadata> {
     dependsOn(tasks.getByName("api-jar"))
 }
@@ -43,6 +49,7 @@ publishing {
         create<MavenPublication>("kotlin-fhir-model-generator") {
             artifactId = "kotlin-fhir-model-generator"
             artifact(tasks.getByName("api-jar"))
+            artifact(sourcesJar.get())
         }
     }
 
@@ -55,7 +62,6 @@ publishing {
                 password = repoPassword
             }
         }
-        mavenLocal()
     }
 }
 
