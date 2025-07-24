@@ -1,0 +1,36 @@
+//
+//  Generated from FHIR Version 4.3.0
+//
+package com.icure.fhir.mapping.domain.fhir.r4b.operationdefinition
+
+import com.icure.fhir.mapping.domain.fhir.r4b.backboneelement.BackboneElement
+import com.icure.fhir.mapping.domain.fhir.r4b.extension.Extension
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Define overloaded variants for when  generating code
+ *
+ * Defines an appropriate combination of parameters to use when invoking this operation, to help
+ * code generators when generating overloaded parameter sets for this operation.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param comment Comments to go on overload
+ */
+@SerialName("OperationDefinitionOverload")
+@Serializable
+public data class OperationDefinitionOverload(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  public val parameterName: List<String> = emptyList(),
+  /**
+   * Comments to go on overload
+   */
+  public val comment: String? = null,
+) : BackboneElement

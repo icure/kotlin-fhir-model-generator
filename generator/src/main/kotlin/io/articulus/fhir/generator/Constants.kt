@@ -1,7 +1,7 @@
 package io.articulus.fhir.generator
 
 object Constants {
-    private const val BASE_PACKAGE_NAME = "io.icure.fhir.mapping.domain.fhir"
+    private const val BASE_PACKAGE_NAME = "com.icure.fhir.mapping.domain.fhir"
 
     fun getBasePackageName(): String {
         return buildString {

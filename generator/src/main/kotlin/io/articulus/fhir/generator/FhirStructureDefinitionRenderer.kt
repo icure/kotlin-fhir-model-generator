@@ -180,7 +180,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
 
         val resourceSerializer = TypeSpec.objectBuilder("ResourceSerializer")
-            .superclass(ClassName("io.icure.fhir.mapping.domain.fhir", "CustomJsonPolymorphicSerializer").parameterizedBy(ClassName("${Constants.getBasePackageName()}.${Settings.modelVersion}", "Resource")))
+            .superclass(ClassName("com.icure.fhir.mapping.domain.fhir", "CustomJsonPolymorphicSerializer").parameterizedBy(ClassName("${Constants.getBasePackageName()}.${Settings.modelVersion}", "Resource")))
             .addSuperclassConstructorParameter("%S, %S", "resourceType", "Resource")
             .addFunction(
                 FunSpec.builder("getSerializerBySerialName")

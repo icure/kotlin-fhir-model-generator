@@ -1,0 +1,68 @@
+//
+//  Generated from FHIR Version 4.0.1-9346c8cc45
+//
+package com.icure.fhir.mapping.domain.fhir.r4.auditevent
+
+import com.icure.fhir.mapping.domain.fhir.r4.backboneelement.BackboneElement
+import com.icure.fhir.mapping.domain.fhir.r4.coding.Coding
+import com.icure.fhir.mapping.domain.fhir.r4.extension.Extension
+import com.icure.fhir.mapping.domain.fhir.r4.reference.Reference
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Data or objects used
+ *
+ * Specific instances of data or objects that have been accessed.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param what Specific instance of resource
+ * @param type Type of entity involved
+ * @param role What role the entity played
+ * @param lifecycle Life-cycle stage for the entity
+ * @param name Descriptor for entity
+ * @param description Descriptive text
+ * @param query Query parameters
+ */
+@SerialName("AuditEventEntity")
+@Serializable
+public data class AuditEventEntity(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * Specific instance of resource
+   */
+  public val what: Reference? = null,
+  /**
+   * Type of entity involved
+   */
+  public val type: Coding? = null,
+  /**
+   * What role the entity played
+   */
+  public val role: Coding? = null,
+  /**
+   * Life-cycle stage for the entity
+   */
+  public val lifecycle: Coding? = null,
+  public val securityLabel: List<Coding> = emptyList(),
+  /**
+   * Descriptor for entity
+   */
+  public val name: String? = null,
+  /**
+   * Descriptive text
+   */
+  public val description: String? = null,
+  /**
+   * Query parameters
+   */
+  public val query: String? = null,
+  public val detail: List<AuditEventEntityDetail> = emptyList(),
+) : BackboneElement

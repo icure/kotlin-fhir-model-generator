@@ -1,0 +1,44 @@
+//
+//  Generated from FHIR Version 4.0.1-9346c8cc45
+//
+package com.icure.fhir.mapping.domain.fhir.r4.auditevent
+
+import com.icure.fhir.mapping.domain.fhir.r4.backboneelement.BackboneElement
+import com.icure.fhir.mapping.domain.fhir.r4.extension.Extension
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Additional Information about the entity
+ *
+ * Tagged value pairs for conveying additional information about the entity.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param type Name of the property
+ * @param valueString Property value
+ * @param valueBase64Binary Property value
+ */
+@SerialName("AuditEventEntityDetail")
+@Serializable
+public data class AuditEventEntityDetail(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * Name of the property
+   */
+  public val type: String? = null,
+  /**
+   * Property value
+   */
+  public val valueString: String? = null,
+  /**
+   * Property value
+   */
+  public val valueBase64Binary: String? = null,
+) : BackboneElement

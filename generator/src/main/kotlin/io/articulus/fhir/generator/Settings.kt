@@ -73,8 +73,8 @@ object Settings {
         val externalPackages: Map<String, String> by lazy {
                 mapOf(
                         when(target) {
-                                GenerationTarget.JVM -> "FloatString" to "io.icure.fhir.mapping.domain.fhir.xml"
-                                GenerationTarget.KMP -> "FloatString" to "io.icure.fhir.mapping.domain.fhir"
+                                GenerationTarget.JVM -> "FloatString" to "com.icure.fhir.mapping.domain.fhir.xml"
+                                GenerationTarget.KMP -> "FloatString" to "com.icure.fhir.mapping.domain.fhir"
                         }
                 )
         }

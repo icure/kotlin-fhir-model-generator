@@ -1,0 +1,46 @@
+//
+//  Generated from FHIR Version 4.3.0
+//
+package com.icure.fhir.mapping.domain.fhir.r4b.communication
+
+import com.icure.fhir.mapping.domain.fhir.r4b.attachment.Attachment
+import com.icure.fhir.mapping.domain.fhir.r4b.backboneelement.BackboneElement
+import com.icure.fhir.mapping.domain.fhir.r4b.extension.Extension
+import com.icure.fhir.mapping.domain.fhir.r4b.reference.Reference
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Message payload
+ *
+ * Text, attachment(s), or resource(s) that was communicated to the recipient.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param contentString Message part content
+ * @param contentAttachment Message part content
+ * @param contentReference Message part content
+ */
+@SerialName("CommunicationPayload")
+@Serializable
+public data class CommunicationPayload(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * Message part content
+   */
+  public val contentString: String? = null,
+  /**
+   * Message part content
+   */
+  public val contentAttachment: Attachment? = null,
+  /**
+   * Message part content
+   */
+  public val contentReference: Reference? = null,
+) : BackboneElement

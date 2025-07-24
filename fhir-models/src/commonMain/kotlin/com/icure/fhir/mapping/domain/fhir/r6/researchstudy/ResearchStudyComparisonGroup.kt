@@ -1,0 +1,62 @@
+//
+//  Generated from FHIR Version 6.0.0-ballot1
+//
+package com.icure.fhir.mapping.domain.fhir.r6.researchstudy
+
+import com.icure.fhir.mapping.domain.fhir.r6.backboneelement.BackboneElement
+import com.icure.fhir.mapping.domain.fhir.r6.codeableconcept.CodeableConcept
+import com.icure.fhir.mapping.domain.fhir.r6.extension.Extension
+import com.icure.fhir.mapping.domain.fhir.r6.reference.Reference
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Defined path through the study for a subject
+ *
+ * Describes an expected event or sequence of events for one of the subjects of a study. E.g. for a
+ * living subject: exposure to drug A, wash-out, exposure to drug B, wash-out, follow-up. E.g. for a
+ * stability study: {store sample from lot A at 25 degrees for 1 month}, {store sample from lot A at 40
+ * degrees for 1 month}.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param linkId Allows the comparisonGroup for the study and the comparisonGroup for the subject to
+ * be linked easily
+ * @param name Label for study comparisonGroup
+ * @param type Categorization of study comparisonGroup
+ * @param description Short explanation of study path
+ * @param observedGroup Group of participants who were enrolled in study comparisonGroup
+ */
+@SerialName("ResearchStudyComparisonGroup")
+@Serializable
+public data class ResearchStudyComparisonGroup(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  /**
+   * Allows the comparisonGroup for the study and the comparisonGroup for the subject to be linked
+   * easily
+   */
+  public val linkId: String? = null,
+  /**
+   * Label for study comparisonGroup
+   */
+  public val name: String? = null,
+  /**
+   * Categorization of study comparisonGroup
+   */
+  public val type: CodeableConcept? = null,
+  /**
+   * Short explanation of study path
+   */
+  public val description: String? = null,
+  public val intendedExposure: List<Reference> = emptyList(),
+  /**
+   * Group of participants who were enrolled in study comparisonGroup
+   */
+  public val observedGroup: Reference? = null,
+) : BackboneElement

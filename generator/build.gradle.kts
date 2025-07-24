@@ -14,7 +14,7 @@ plugins {
 
 val gitVersion: String? by project
 
-group = "io.icure.fhir"
+group = "com.icure.fhir"
 version = gitVersion ?: "1.0.0-RC.6"
 description = "Kotlin on FHIR Model Generator"
 

@@ -1,0 +1,120 @@
+//
+//  Generated from FHIR Version 5.0.0
+//
+package com.icure.fhir.mapping.domain.fhir.r5.claimresponse
+
+import com.icure.fhir.mapping.domain.fhir.r5.Quantity
+import com.icure.fhir.mapping.domain.fhir.r5.address.Address
+import com.icure.fhir.mapping.domain.fhir.r5.backboneelement.BackboneElement
+import com.icure.fhir.mapping.domain.fhir.r5.codeableconcept.CodeableConcept
+import com.icure.fhir.mapping.domain.fhir.r5.extension.Extension
+import com.icure.fhir.mapping.domain.fhir.r5.identifier.Identifier
+import com.icure.fhir.mapping.domain.fhir.r5.money.Money
+import com.icure.fhir.mapping.domain.fhir.r5.period.Period
+import com.icure.fhir.mapping.domain.fhir.r5.reference.Reference
+import kotlin.Float
+import kotlin.Int
+import kotlin.String
+import kotlin.collections.List
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+/**
+ * Insurer added line items
+ *
+ * The first-tier service adjudications for payor added product or service lines.
+ *
+ * @param id Unique id for inter-element referencing
+ * @param revenue Revenue or cost center code
+ * @param productOrService Billing, service, product, or drug code
+ * @param productOrServiceEnd End of a range of codes
+ * @param servicedDate Date or dates of service or product delivery
+ * @param servicedPeriod Date or dates of service or product delivery
+ * @param locationCodeableConcept Place of service or where product was supplied
+ * @param locationAddress Place of service or where product was supplied
+ * @param locationReference Place of service or where product was supplied
+ * @param quantity Count of products or services
+ * @param unitPrice Fee, charge or cost per item
+ * @param factor Price scaling factor
+ * @param tax Total tax
+ * @param net Total item cost
+ * @param reviewOutcome Added items adjudication results
+ */
+@SerialName("ClaimResponseAddItem")
+@Serializable
+public data class ClaimResponseAddItem(
+  /**
+   * Unique id for inter-element referencing
+   */
+  override val id: String? = null,
+  override val extension: List<Extension> = emptyList(),
+  override val modifierExtension: List<Extension> = emptyList(),
+  public val itemSequence: List<Int> = emptyList(),
+  public val detailSequence: List<Int> = emptyList(),
+  public val subdetailSequence: List<Int> = emptyList(),
+  public val traceNumber: List<Identifier> = emptyList(),
+  public val provider: List<Reference> = emptyList(),
+  /**
+   * Revenue or cost center code
+   */
+  public val revenue: CodeableConcept? = null,
+  /**
+   * Billing, service, product, or drug code
+   */
+  public val productOrService: CodeableConcept? = null,
+  /**
+   * End of a range of codes
+   */
+  public val productOrServiceEnd: CodeableConcept? = null,
+  public val request: List<Reference> = emptyList(),
+  public val modifier: List<CodeableConcept> = emptyList(),
+  public val programCode: List<CodeableConcept> = emptyList(),
+  /**
+   * Date or dates of service or product delivery
+   */
+  public val servicedDate: String? = null,
+  /**
+   * Date or dates of service or product delivery
+   */
+  public val servicedPeriod: Period? = null,
+  /**
+   * Place of service or where product was supplied
+   */
+  public val locationCodeableConcept: CodeableConcept? = null,
+  /**
+   * Place of service or where product was supplied
+   */
+  public val locationAddress: Address? = null,
+  /**
+   * Place of service or where product was supplied
+   */
+  public val locationReference: Reference? = null,
+  /**
+   * Count of products or services
+   */
+  public val quantity: Quantity? = null,
+  /**
+   * Fee, charge or cost per item
+   */
+  public val unitPrice: Money? = null,
+  /**
+   * Price scaling factor
+   */
+  public val factor: Float? = null,
+  /**
+   * Total tax
+   */
+  public val tax: Money? = null,
+  /**
+   * Total item cost
+   */
+  public val net: Money? = null,
+  public val bodySite: List<ClaimResponseAddItemBodySite> = emptyList(),
+  public val noteNumber: List<Int> = emptyList(),
+  /**
+   * Added items adjudication results
+   */
+  public val reviewOutcome: ClaimResponseItemReviewOutcome? = null,
+  public val adjudication: List<ClaimResponseItemAdjudication> = emptyList(),
+  public val detail: List<ClaimResponseAddItemDetail> = emptyList(),
+) : BackboneElement
