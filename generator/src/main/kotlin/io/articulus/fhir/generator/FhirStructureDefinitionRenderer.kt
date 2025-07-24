@@ -245,12 +245,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
     private fun renderManualValueClasses() {
         Settings.manualValueClasses.forEach { (name, property) ->
-            val packageName = spec.packageName + ".${name.lowercase()}"
-            val out = FileSpec.builder(packageName, name)
+            val out = FileSpec.builder(spec.packageName, name)
             val classBuilder = TypeSpec.classBuilder(name).addModifiers(KModifier.VALUE)
 
             val (propName, typeInfo) = property
-            val className = ClassName(packageName, typeInfo.first)
+            val className = ClassName(spec.packageName, typeInfo.first)
             val propBuilder = PropertySpec.builder(propName, className)
             if (typeInfo.second.isNotBlank()) {
                 propBuilder.initializer(typeInfo.second)
@@ -320,7 +319,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
 
         cls.properties.toSortedMap().forEach { (_, prop) ->
-            classBuilder.addProperty(makeProperty(prop, packages, true, false))
+            classBuilder.addProperty(makeProperty(prop, packages, isInterface = true, isInConstructor = false))
         }
 
         kmpOnly {
@@ -492,8 +491,13 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
     }
 
     private fun mappedTypes(prop: FhirClassProperty, packages: Map<String, String>): Pair<String, ClassName> {
-        val mappedTypeName = Settings.classMap[prop.typeName.lowercase()] ?: prop.typeName
-        val typeClassName = ClassName(packages[mappedTypeName] ?: spec.packageName, mappedTypeName)
+        val mappedTypeName =
+            Settings.manualProperties[prop.parentName to prop.name]
+                ?: Settings.classMap[prop.typeName.lowercase()]
+                ?: prop.typeName
+        val typeClassName = ClassName(
+            packageName = Settings.externalPackages[mappedTypeName] ?: packages[mappedTypeName] ?: spec.packageName,
+            mappedTypeName)
 
         return Pair(mappedTypeName, typeClassName)
     }

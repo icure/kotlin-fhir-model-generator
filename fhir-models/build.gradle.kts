@@ -18,7 +18,7 @@ plugins {
 val gitVersion: String? by project
 
 group = "com.icure"
-version = gitVersion ?: "0.0.1-SNAPSHOT"
+version = gitVersion ?: "1.0.0-RC.13"
 
 private fun Project.getLocalProperties() =
     Properties().apply {

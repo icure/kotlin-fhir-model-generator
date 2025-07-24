@@ -15,7 +15,7 @@ plugins {
 val gitVersion: String? by project
 
 group = "io.icure.fhir"
-version = gitVersion ?: "0.0.1-SNAPSHOT"
+version = gitVersion ?: "1.0.0-RC.6"
 description = "Kotlin on FHIR Model Generator"
 
 application {
@@ -34,6 +34,12 @@ tasks.register<Jar>("api-jar") {
     from(sourceSets.main.get().output.classesDirs)
 }
 
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from("gen/src/main/kotlin")
+    from(sourceSets.main.get().output.classesDirs)
+}
+
 tasks.withType<GenerateModuleMetadata> {
     dependsOn(tasks.getByName("api-jar"))
 }
@@ -43,6 +49,7 @@ publishing {
         create<MavenPublication>("kotlin-fhir-model-generator") {
             artifactId = "kotlin-fhir-model-generator"
             artifact(tasks.getByName("api-jar"))
+            artifact(sourcesJar.get())
         }
     }
 
@@ -162,6 +169,13 @@ val targetMatrix = mapOf(
     "KMP" to listOf("${project.rootDir}/fhir-models/src/commonMain/kotlin", "${project.rootDir}/fhir-models/src/commonTest/kotlin", "${project.rootDir}/fhir-models/src/commonMain/resources/samples")
 )
 
+val filesToCopy = mapOf(
+    "JVM" to listOf(
+        "${project.rootDir}/fhir-models/src/commonMain/kotlin/io/icure/fhir/mapping/domain/fhir/ExactMeasure.kt" to
+            "${project.rootDir}/generator/gen/src/main/kotlin/io/icure/fhir/mapping/domain/fhir",
+    )
+)
+
 tasks {
     withType<Copy> {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -207,6 +221,12 @@ tasks {
                             version,
                             target
                         )
+                    }
+                }
+                filesToCopy[target]?.forEach { (src, dst) ->
+                    copy {
+                        from(src)
+                        into(dst)
                     }
                 }
             }

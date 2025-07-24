@@ -70,6 +70,14 @@ object Settings {
                 "http://hl7.org/fhirpath/system.string" to "String"
         )
 
+        val externalPackages: Map<String, String> by lazy {
+                mapOf(
+                        when(target) {
+                                GenerationTarget.JVM -> "FloatString" to "io.icure.fhir.mapping.domain.fhir.xml"
+                                GenerationTarget.KMP -> "FloatString" to "io.icure.fhir.mapping.domain.fhir"
+                        }
+                )
+        }
 
         val primitives = listOf(
                 "String",
@@ -116,6 +124,10 @@ object Settings {
 
         val manualValueClasses = mapOf<String, Pair<String, Pair<String, String>>>(
 //                "Xhtml" to ("s" to Pair("String", "s"))
+        )
+
+        val manualProperties: Map<Pair<String, String>, String> = mapOf(
+                ("Quantity" to "value") to "FloatString"
         )
 
         val forcedImplementedInterfaces = listOf(

@@ -3,8 +3,8 @@
 //
 package io.icure.fhir.mapping.domain.fhir.r5
 
+import io.icure.fhir.mapping.domain.fhir.FloatString
 import io.icure.fhir.mapping.domain.fhir.r5.datatype.DataType
-import kotlin.Float
 import kotlin.String
 import kotlinx.serialization.Serializable
 
@@ -40,5 +40,5 @@ public interface Quantity : DataType {
   /**
    * Numerical value (with implicit precision)
    */
-  public val `value`: Float?
+  public val `value`: FloatString?
 }

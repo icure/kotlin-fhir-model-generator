@@ -3,7 +3,7 @@
 //
 package io.icure.fhir.mapping.domain.fhir.r4b
 
-import kotlin.Float
+import io.icure.fhir.mapping.domain.fhir.FloatString
 import kotlin.String
 import kotlinx.serialization.Serializable
 
@@ -39,5 +39,5 @@ public interface Quantity : Element {
   /**
    * Numerical value (with implicit precision)
    */
-  public val `value`: Float?
+  public val `value`: FloatString?
 }

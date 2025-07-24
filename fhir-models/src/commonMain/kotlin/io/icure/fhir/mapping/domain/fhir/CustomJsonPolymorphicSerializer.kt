@@ -17,32 +17,32 @@ import kotlin.reflect.KClass
 
 @OptIn(ExperimentalSerializationApi::class)
 abstract class CustomJsonPolymorphicSerializer<T : Any>(
-    private val discriminatorField: String,
-    private val tSerialName: String,
+	private val discriminatorField: String,
+	private val tSerialName: String,
 ) : KSerializer<T> {
-    abstract fun getSerializerBySerialName(serialName: String): KSerializer<out T>?
-    abstract fun getSerializerByClass(kclass: KClass<out T>): KSerializer<out T>?
+	abstract fun getSerializerBySerialName(serialName: String): KSerializer<out T>?
+	abstract fun getSerializerByClass(kclass: KClass<out T>): KSerializer<out T>?
 
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor(tSerialName) {
-        element(discriminatorField, String.serializer().descriptor)
-    }
+	override val descriptor: SerialDescriptor = buildClassSerialDescriptor(tSerialName) {
+		element(discriminatorField, String.serializer().descriptor)
+	}
 
-    override fun deserialize(decoder: Decoder): T {
-        require(decoder is JsonDecoder) { "This class only supports JSON serialization" }
-        val json = decoder.decodeJsonElement() as? JsonObject ?: throw SerializationException("Expected to decode a JSON object")
-        val serialNameElement = json.jsonObject[discriminatorField] ?: throw SerializationException("Field '$discriminatorField' not found")
-        val serialName = (serialNameElement as? JsonPrimitive)?.takeIf { it.isString }?.content ?: throw SerializationException("Field '$discriminatorField' is not a string")
-        val serializer = getSerializerBySerialName(serialName) ?: throw SerializationException("Unknown serial name for deserialization of $tSerialName: $serialName")
-        return decoder.json.decodeFromJsonElement(serializer, JsonObject(json - discriminatorField))
-    }
+	override fun deserialize(decoder: Decoder): T {
+		require(decoder is JsonDecoder) { "This class only supports JSON serialization" }
+		val json = decoder.decodeJsonElement() as? JsonObject ?: throw SerializationException("Expected to decode a JSON object")
+		val serialNameElement = json.jsonObject[discriminatorField] ?: throw SerializationException("Field '$discriminatorField' not found")
+		val serialName = (serialNameElement as? JsonPrimitive)?.takeIf { it.isString }?.content ?: throw SerializationException("Field '$discriminatorField' is not a string")
+		val serializer = getSerializerBySerialName(serialName) ?: throw SerializationException("Unknown serial name for deserialization of $tSerialName: $serialName")
+		return decoder.json.decodeFromJsonElement(serializer, JsonObject(json - discriminatorField))
+	}
 
-    override fun serialize(encoder: Encoder, value: T) {
-        require(encoder is JsonEncoder) { "This class only supports JSON serialization" }
-        val serializer = getSerializerByClass(value::class)?.cast() ?: throw SerializationException("Can't serialize ${value::class} as $tSerialName")
-        val json = encoder.json.encodeToJsonElement(serializer, value) as? JsonObject ?: throw SerializationException("Expected to encode a JSON object for ${serializer.descriptor.serialName}")
-        encoder.encodeJsonElement(JsonObject(mapOf(discriminatorField to JsonPrimitive(serializer.descriptor.serialName)) + json))
-    }
+	override fun serialize(encoder: Encoder, value: T) {
+		require(encoder is JsonEncoder) { "This class only supports JSON serialization" }
+		val serializer = getSerializerByClass(value::class)?.cast() ?: throw SerializationException("Can't serialize ${value::class} as $tSerialName")
+		val json = encoder.json.encodeToJsonElement(serializer, value) as? JsonObject ?: throw SerializationException("Expected to encode a JSON object for ${serializer.descriptor.serialName}")
+		encoder.encodeJsonElement(JsonObject(mapOf(discriminatorField to JsonPrimitive(serializer.descriptor.serialName)) + json))
+	}
 
-    @Suppress("UNCHECKED_CAST")
-    private fun KSerializer<out T>.cast(): KSerializer<T> = this as KSerializer<T>
+	@Suppress("UNCHECKED_CAST")
+	private fun KSerializer<out T>.cast(): KSerializer<T> = this as KSerializer<T>
 }
