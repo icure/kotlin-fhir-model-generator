@@ -169,15 +169,15 @@ fun projectHasSignatureProperties() =
         && project.hasProperty("signingInMemoryKeyPassword")
         && project.hasProperty("signingInMemoryKey")
 
-if (projectHasSignatureProperties()) {
-    signing {
-        useInMemoryPgpKeys(
-            file(project.property("signing.secretKeyRingFile") as String).readText(),
-            project.property("signing.password") as String
-        )
-        sign(publishing.publications)
-    }
-}
+//if (projectHasSignatureProperties()) {
+//    signing {
+//        useInMemoryPgpKeys(
+//            file(project.property("signingSecretKeyRingFile") as String).readText(),
+//            project.property("signingInMemoryKeyPassword") as String
+//        )
+//        sign(publishing.publications)
+//    }
+//}
 
 if (!projectHasSignatureProperties()) {
     tasks.withType<PublishToMavenRepository> {
