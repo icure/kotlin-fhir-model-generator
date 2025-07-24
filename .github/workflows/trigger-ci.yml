@@ -14,7 +14,7 @@ jobs:
               with:
                   repository: icure/the-forge
                   token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-                  ref: main
+                  ref: master
                   submodules: true
                   fetch-tags: true
 
