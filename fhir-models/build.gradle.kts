@@ -165,7 +165,9 @@ mavenPublishing {
 }
 
 fun projectHasSignatureProperties() =
-    project.hasProperty("signing.keyId") && project.hasProperty("signing.secretKeyRingFile") && project.hasProperty("signing.password")
+    project.hasProperty("signingInMemoryKeyId")
+        && project.hasProperty("signingInMemoryKeyPassword")
+        && project.hasProperty("signingInMemoryKey")
 
 if (projectHasSignatureProperties()) {
     signing {
