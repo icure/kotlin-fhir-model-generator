@@ -15,10 +15,8 @@ plugins {
     signing
 }
 
-val gitVersion: String? by project
-
 group = "com.icure"
-version = gitVersion ?: "1.0.0-RC.13"
+version = "1.0.0"
 
 private fun Project.getLocalProperties() =
     Properties().apply {

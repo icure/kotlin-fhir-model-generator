@@ -12,10 +12,8 @@ plugins {
     `maven-publish`
 }
 
-val gitVersion: String? by project
-
 group = "com.icure.fhir"
-version = gitVersion ?: "1.0.0-RC.6"
+version = "1.0.0"
 description = "Kotlin on FHIR Model Generator"
 
 application {
