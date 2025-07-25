@@ -142,7 +142,7 @@ tasks.withType<Jar> {
     }
 }
 dependencies {
-    ksp(project(":sdk-codegen:ksp-json-processor"))
+    ksp(project(":ksp-json-processor"))
     api(libs.org.jetbrains.kotlin.kotlin.reflect)
     api(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
     api(libs.com.google.code.gson.gson)
