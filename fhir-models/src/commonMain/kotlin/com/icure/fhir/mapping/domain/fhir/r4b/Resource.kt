@@ -3,8 +3,11 @@
 //
 package com.icure.fhir.mapping.domain.fhir.r4b
 
+import kotlin.OptIn
 import kotlin.String
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 /**
  * Base Resource
@@ -12,6 +15,8 @@ import kotlinx.serialization.Serializable
  * This is the base resource type for everything.
  */
 @Serializable(with = ResourceSerializer::class)
+@JsonClassDiscriminator(discriminator = "resourceType")
+@OptIn(ExperimentalSerializationApi::class)
 public interface Resource {
   /**
    * Logical id of this artifact
