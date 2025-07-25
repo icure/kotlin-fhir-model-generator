@@ -18,7 +18,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * Insurance or medical plan or a payment agreement
@@ -108,7 +107,7 @@ public data class Coverage(
    */
   public val period: Period? = null,
   public val payor: List<Reference> = emptyList(),
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: List<CoverageClass> = emptyList(),
   /**
    * Relative order of the coverage

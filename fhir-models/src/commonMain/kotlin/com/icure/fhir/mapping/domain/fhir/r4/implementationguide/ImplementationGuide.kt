@@ -16,7 +16,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A set of rules about how FHIR is used
@@ -125,7 +124,7 @@ public data class ImplementationGuide(
   public val license: String? = null,
   public val fhirVersion: List<String> = emptyList(),
   public val dependsOn: List<ImplementationGuideDependsOn> = emptyList(),
-  @JsonNames("global")
+  @SerialName("global")
   public val global_fhir: List<ImplementationGuideGlobal> = emptyList(),
   /**
    * Information needed to build the IG

@@ -373,18 +373,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                                 }
                             )
                             .build()
-                    ).let {
-                        it + if (cls.name == "Resource") {
-                            listOf(
-                                AnnotationSpec.builder(ClassName("kotlinx.serialization.json", "JsonClassDiscriminator"))
-                                    .addMember("discriminator = \"resourceType\"")
-                                    .build(),
-                                AnnotationSpec.builder(ClassName("kotlin", "OptIn"))
-                                    .addMember("%T::class", ClassName("kotlinx.serialization", "ExperimentalSerializationApi"))
-                                    .build()
-                            )
-                        } else emptyList()
-                    },
+                    ),
                 )
             }
         }
@@ -620,7 +609,7 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 }
 
                 Settings.GenerationTarget.KMP -> {
-                    ClassName("kotlinx.serialization.json", "JsonNames")
+                    ClassName("kotlinx.serialization", "SerialName")
                 }
             }
 

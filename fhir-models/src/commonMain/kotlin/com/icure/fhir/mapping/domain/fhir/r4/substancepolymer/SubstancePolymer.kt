@@ -13,7 +13,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * Todo
@@ -57,7 +56,7 @@ public data class SubstancePolymer(
   /**
    * Todo
    */
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: CodeableConcept? = null,
   /**
    * Todo

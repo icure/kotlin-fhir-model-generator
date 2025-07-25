@@ -18,7 +18,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A medically related item or items, in a container or package
@@ -104,6 +103,6 @@ public data class PackagedProductDefinition(
    * A packaging item, as a container for medically related items, possibly with other packaging
    * items within, or a packaging component, such as bottle cap
    */
-  @JsonNames("package")
+  @SerialName("package")
   public val package_fhir: PackagedProductDefinitionPackage? = null,
 ) : DomainResource

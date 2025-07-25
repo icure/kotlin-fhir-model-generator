@@ -11,7 +11,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * How precise the estimate is
@@ -44,7 +43,7 @@ public data class EffectEvidenceSynthesisEffectEstimatePrecisionEstimate(
   /**
    * Lower bound
    */
-  @JsonNames("from")
+  @SerialName("from")
   public val from_fhir: Float? = null,
   /**
    * Upper bound

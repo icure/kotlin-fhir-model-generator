@@ -11,7 +11,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * List of past encounter classes
@@ -39,7 +38,7 @@ public data class EncounterClassHistory(
   /**
    * inpatient | outpatient | ambulatory | emergency +
    */
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: Coding,
   /**
    * The time that the episode was in the specified class

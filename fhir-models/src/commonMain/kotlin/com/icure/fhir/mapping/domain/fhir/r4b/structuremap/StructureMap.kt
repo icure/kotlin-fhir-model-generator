@@ -17,7 +17,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A Map of relationships between 2 structures that can be used to transform data
@@ -116,7 +115,7 @@ public data class StructureMap(
    */
   public val copyright: String? = null,
   public val structure: List<StructureMapStructure> = emptyList(),
-  @JsonNames("import")
+  @SerialName("import")
   public val import_fhir: List<String> = emptyList(),
   public val group: List<StructureMapGroup> = emptyList(),
 ) : DomainResource

@@ -21,7 +21,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or
@@ -89,7 +88,7 @@ public data class Appointment(
    * The coded reason for the appointment being cancelled
    */
   public val cancellationReason: CodeableConcept? = null,
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: List<CodeableConcept> = emptyList(),
   public val serviceCategory: List<CodeableConcept> = emptyList(),
   public val serviceType: List<CodeableReference> = emptyList(),

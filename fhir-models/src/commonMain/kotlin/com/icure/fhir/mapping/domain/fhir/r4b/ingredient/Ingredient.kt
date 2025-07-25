@@ -16,7 +16,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * An ingredient of a manufactured item or pharmaceutical product
@@ -68,7 +67,7 @@ public data class Ingredient(
    * draft | active | retired | unknown
    */
   public val status: String? = null,
-  @JsonNames("for")
+  @SerialName("for")
   public val for_fhir: List<Reference> = emptyList(),
   /**
    * Purpose of the ingredient within the product, e.g. active, inactive

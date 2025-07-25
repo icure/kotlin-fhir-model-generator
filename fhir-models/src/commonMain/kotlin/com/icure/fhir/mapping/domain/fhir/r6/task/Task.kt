@@ -19,7 +19,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A task to be performed
@@ -136,7 +135,7 @@ public data class Task(
   /**
    * Beneficiary of the Task
    */
-  @JsonNames("for")
+  @SerialName("for")
   public val for_fhir: Reference? = null,
   /**
    * Healthcare event during which this task originated

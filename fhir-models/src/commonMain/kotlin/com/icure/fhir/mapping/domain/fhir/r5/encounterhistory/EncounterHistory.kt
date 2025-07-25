@@ -18,7 +18,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A record of significant events/milestones key data throughout the history of an Encounter
@@ -82,7 +81,7 @@ public data class EncounterHistory(
   /**
    * Classification of patient encounter
    */
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: CodeableConcept,
   public val type: List<CodeableConcept> = emptyList(),
   public val serviceType: List<CodeableReference> = emptyList(),
