@@ -20,12 +20,6 @@ include(
     ":generator"
 )
 
-include(
-    listOf(
-        ":sdk-codegen:sdk-codegen",
-        ":sdk-codegen:python-poet",
-        ":sdk-codegen:ksp-json-processor",
-    )
-)
+include(listOf(":ksp-json-processor",))
 
 rootProject.name = "kotlin-fhir-model-generator"
