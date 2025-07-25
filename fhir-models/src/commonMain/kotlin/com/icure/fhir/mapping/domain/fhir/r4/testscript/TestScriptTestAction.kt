@@ -9,7 +9,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A test operation or assert to perform
@@ -36,6 +35,6 @@ public data class TestScriptTestAction(
   /**
    * The setup assertion to perform
    */
-  @JsonNames("assert")
+  @SerialName("assert")
   public val assert_fhir: TestScriptSetupActionAssert? = null,
 ) : BackboneElement

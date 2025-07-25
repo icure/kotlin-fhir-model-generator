@@ -18,7 +18,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * An interaction during which services are provided to the patient
@@ -77,7 +76,7 @@ public data class Encounter(
   /**
    * Classification of patient encounter
    */
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: Coding,
   public val classHistory: List<EncounterClassHistory> = emptyList(),
   public val type: List<CodeableConcept> = emptyList(),

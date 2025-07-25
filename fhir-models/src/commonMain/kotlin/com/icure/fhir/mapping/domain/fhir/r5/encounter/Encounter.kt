@@ -19,7 +19,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * An interaction during which services are provided to the patient
@@ -79,7 +78,7 @@ public data class Encounter(
    * entered-in-error | unknown
    */
   public val status: String? = null,
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: List<CodeableConcept> = emptyList(),
   /**
    * Indicates the urgency of the encounter

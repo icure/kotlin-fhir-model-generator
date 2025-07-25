@@ -17,7 +17,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * Delivery of item
@@ -127,7 +126,7 @@ public data class Transport(
   /**
    * Beneficiary of the Transport
    */
-  @JsonNames("for")
+  @SerialName("for")
   public val for_fhir: Reference? = null,
   /**
    * Healthcare event during which this transport originated

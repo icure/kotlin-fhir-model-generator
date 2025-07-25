@@ -11,7 +11,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A Signature - XML DigSig, JWS, Graphical image of signature, etc.
@@ -41,7 +40,7 @@ public data class Signature(
   /**
    * When the signature was created
    */
-  @JsonNames("when")
+  @SerialName("when")
   public val when_fhir: String? = null,
   /**
    * Who signed

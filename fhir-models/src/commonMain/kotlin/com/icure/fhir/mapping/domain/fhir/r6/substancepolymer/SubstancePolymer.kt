@@ -14,7 +14,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * Properties of a substance specific to it being a polymer
@@ -67,7 +66,7 @@ public data class SubstancePolymer(
   /**
    * Overall type of the polymer
    */
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: CodeableConcept? = null,
   /**
    * Polymer geometry, e.g. linear, branched, cross-linked, network or dendritic

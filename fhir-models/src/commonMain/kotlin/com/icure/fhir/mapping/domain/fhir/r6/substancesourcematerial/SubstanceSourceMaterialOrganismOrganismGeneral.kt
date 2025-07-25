@@ -10,7 +10,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * 4.9.13.7.1 Kingdom (Conditional)
@@ -43,7 +42,7 @@ public data class SubstanceSourceMaterialOrganismOrganismGeneral(
   /**
    * The class of an organism shall be specified
    */
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: CodeableConcept? = null,
   /**
    * The order of an organism shall be specified,

@@ -14,7 +14,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * When the event is to occur
@@ -99,7 +98,7 @@ public data class TimingRepeat(
   public val periodUnit: String? = null,
   public val dayOfWeek: List<String> = emptyList(),
   public val timeOfDay: List<String> = emptyList(),
-  @JsonNames("when")
+  @SerialName("when")
   public val when_fhir: List<String> = emptyList(),
   /**
    * Minutes from event (before or after)

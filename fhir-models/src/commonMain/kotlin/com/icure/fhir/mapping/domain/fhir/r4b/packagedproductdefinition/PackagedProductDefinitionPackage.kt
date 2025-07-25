@@ -13,7 +13,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * A packaging item, as a container for medically related items, possibly with other packaging items
@@ -53,6 +52,6 @@ public data class PackagedProductDefinitionPackage(
   public val manufacturer: List<Reference> = emptyList(),
   public val `property`: List<PackagedProductDefinitionPackageProperty> = emptyList(),
   public val containedItem: List<PackagedProductDefinitionPackageContainedItem> = emptyList(),
-  @JsonNames("package")
+  @SerialName("package")
   public val package_fhir: List<PackagedProductDefinitionPackage> = emptyList(),
 ) : BackboneElement

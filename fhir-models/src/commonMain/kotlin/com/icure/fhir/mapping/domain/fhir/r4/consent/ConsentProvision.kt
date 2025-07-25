@@ -12,7 +12,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * Constraints to the base Consent.policyRule
@@ -46,7 +45,7 @@ public data class ConsentProvision(
   public val action: List<CodeableConcept> = emptyList(),
   public val securityLabel: List<Coding> = emptyList(),
   public val purpose: List<Coding> = emptyList(),
-  @JsonNames("class")
+  @SerialName("class")
   public val class_fhir: List<Coding> = emptyList(),
   public val code: List<CodeableConcept> = emptyList(),
   /**
