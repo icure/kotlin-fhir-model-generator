@@ -603,19 +603,19 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         propertySpec: PropertySpec.Builder
     ): PropertySpec.Builder {
         return if (propName != origName) {
-            val foo = when (Settings.target) {
+            val extraAnnotation = when (Settings.target) {
                 Settings.GenerationTarget.JVM -> {
                     ClassName("com.fasterxml.jackson.annotation", "JsonProperty")
                 }
 
-                Settings.GenerationTarget.KMP -> {
-                    ClassName("kotlinx.serialization", "SerialName")
-                }
+                else -> null
             }
 
-            propertySpec.addAnnotation(
-                AnnotationSpec.builder(foo).addMember("\"${origName}\"")
-                    .build()
+            propertySpec.addAnnotations(
+                listOfNotNull(extraAnnotation, ClassName("kotlinx.serialization", "SerialName")).map {
+                    AnnotationSpec.builder(it).addMember("\"${origName}\"")
+                        .build()
+                }
             )
         } else propertySpec
     }

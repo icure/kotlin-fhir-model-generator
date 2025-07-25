@@ -1,5 +1,9 @@
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 val mavenReleasesRepository: String by project
 val repoUsername: String by project
@@ -111,7 +115,8 @@ tasks.withType<GenerateMavenPom>().all {
     doLast {
         val file = File("${project.rootDir}/generator/build/publications/kotlin-fhir-model-generator/pom-default.xml")
         var text = file.readText()
-        val regex = "(?s)(<dependencyManagement>.+?<dependencies>)(.+?)(</dependencies>.+?</dependencyManagement>)".toRegex()
+        val regex =
+            "(?s)(<dependencyManagement>.+?<dependencies>)(.+?)(</dependencies>.+?</dependencyManagement>)".toRegex()
         val matcher = regex.find(text)
         if (matcher != null) {
             text = regex.replaceFirst(text, "")
@@ -124,14 +129,16 @@ tasks.withType<GenerateMavenPom>().all {
 
 tasks.withType<Jar> {
     manifest {
-        attributes(mapOf(
-            "Built-By"        to System.getProperties()["user.name"],
-            "Build-Timestamp" to SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(Date()),
-            "Build-Revision"  to version,
-            "Created-By"      to "Gradle ${gradle.gradleVersion}",
-            "Build-Jdk"       to "${System.getProperties()["java.version"]} (${System.getProperties()["java.vendor"]} ${System.getProperties()["java.vm.version"]})",
-            "Build-OS"        to "${System.getProperties()["os.name"]} ${System.getProperties()["os.arch"]} ${System.getProperties()["os.version"]}"
-        ))
+        attributes(
+            mapOf(
+                "Built-By" to System.getProperties()["user.name"],
+                "Build-Timestamp" to SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(Date()),
+                "Build-Revision" to version,
+                "Created-By" to "Gradle ${gradle.gradleVersion}",
+                "Build-Jdk" to "${System.getProperties()["java.version"]} (${System.getProperties()["java.vendor"]} ${System.getProperties()["java.vm.version"]})",
+                "Build-OS" to "${System.getProperties()["os.name"]} ${System.getProperties()["os.arch"]} ${System.getProperties()["os.version"]}"
+            )
+        )
     }
 }
 dependencies {
@@ -163,14 +170,22 @@ val fhirVersionsMatrix = mapOf(
 )
 
 val targetMatrix = mapOf(
-    "JVM" to listOf("${project.rootDir}/generator/gen/src/main/kotlin", "${project.rootDir}/generator/gen/src/test/kotlin", "${project.rootDir}/generator/gen/src/main/resources/samples"),
-    "KMP" to listOf("${project.rootDir}/fhir-models/src/commonMain/kotlin", "${project.rootDir}/fhir-models/src/commonTest/kotlin", "${project.rootDir}/fhir-models/src/commonMain/resources/samples")
+    "JVM" to listOf(
+        "${project.rootDir}/generator/gen/src/main/kotlin",
+        "${project.rootDir}/generator/gen/src/test/kotlin",
+        "${project.rootDir}/generator/gen/src/main/resources/samples"
+    ),
+    "KMP" to listOf(
+        "${project.rootDir}/fhir-models/src/commonMain/kotlin",
+        "${project.rootDir}/fhir-models/src/commonTest/kotlin",
+        "${project.rootDir}/fhir-models/src/commonMain/resources/samples"
+    )
 )
 
 val filesToCopy = mapOf(
     "JVM" to listOf(
         "${project.rootDir}/fhir-models/src/commonMain/kotlin/io/icure/fhir/mapping/domain/fhir/ExactMeasure.kt" to
-            "${project.rootDir}/generator/gen/src/main/kotlin/io/icure/fhir/mapping/domain/fhir",
+                "${project.rootDir}/generator/gen/src/main/kotlin/io/icure/fhir/mapping/domain/fhir",
     )
 )
 
@@ -208,23 +223,27 @@ tasks {
 
             val jarPath = "${libsDir}/fhirModelGenerator.jar"
             targetMatrix.forEach { target, params ->
-                fhirVersionsMatrix.forEach { (version, path) ->
-                    exec {
-                        commandLine(
-                            "java", "-jar", jarPath,
-                            params[0],
-                            params[1],
-                            params[2],
-                            "https://hl7.org/fhir/$path/",
-                            version,
-                            target
-                        )
-                    }
-                }
-                filesToCopy[target]?.forEach { (src, dst) ->
-                    copy {
-                        from(src)
-                        into(dst)
+                runBlocking {
+                    fhirVersionsMatrix.map { (version, path) ->
+                        launch {
+                            exec {
+                                commandLine(
+                                    "java", "-jar", jarPath,
+                                    params[0],
+                                    params[1],
+                                    params[2],
+                                    "https://hl7.org/fhir/$path/",
+                                    version,
+                                    target
+                                )
+                            }
+                        }
+                    }.joinAll()
+                    filesToCopy[target]?.forEach { (src, dst) ->
+                        copy {
+                            from(src)
+                            into(dst)
+                        }
                     }
                 }
             }
