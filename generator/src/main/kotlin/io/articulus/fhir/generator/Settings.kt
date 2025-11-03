@@ -123,11 +123,6 @@ object Settings {
                 "FhirDate" to "FhirDate.now()"
         )
 
-        private data class ManualClassInfo(
-                val className: String,
-                val properties: Map<String, Pair<String, String?>>
-        )
-
         val manualClasses = mapOf<String, Map<String, Pair<String, String?>>>(
                 "FhirPrimitiveExtension" to mapOf(
                         "id" to Pair("String", null),
