@@ -1,6 +1,7 @@
 package io.articulus.fhir.generator
 
 import com.google.gson.JsonElement
+import java.util.Locale.getDefault
 
 class FhirClassProperty(element: FhirStructureDefinitionElement, type: FhirElementType, typeName: String? = null) {
 
@@ -20,6 +21,12 @@ class FhirClassProperty(element: FhirStructureDefinitionElement, type: FhirEleme
     val formalDesc: String = element.definition.formal
     val isNative: Boolean
 
+    /**
+     * Indicates whether the property can be extended via FHIR's extension mechanism.
+     * Another property named "_{propertyName}" will be generated to hold the extensions for this property.
+     */
+    val canBeExtended: Boolean
+
     private var isSummary: Boolean
 
     private var representation: JsonElement?
@@ -32,7 +39,7 @@ class FhirClassProperty(element: FhirStructureDefinitionElement, type: FhirEleme
 
         if (n.contains("[x]")) {
             oneOfMany = n.replace("[x]", "")
-            n = oneOfMany + this.typeName.capitalize()
+            n = oneOfMany + this.typeName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(getDefault()) else it.toString() }
             while (n.contains("[x]")) {
                 n = n.replace("[x]", "")
             }
@@ -47,6 +54,7 @@ class FhirClassProperty(element: FhirStructureDefinitionElement, type: FhirEleme
         className = spec.classNameForTypeIfProperty(this.typeName) ?: ""
         jsonClass = spec.jsonClassForClassName(className)
         isNative = spec.classNameIsNative(className)
+        canBeExtended = className in Settings.extendablePrimitives
 
         isSummary = element.isSummary
         referenceToNames =
