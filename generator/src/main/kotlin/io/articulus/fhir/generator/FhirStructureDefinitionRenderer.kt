@@ -296,6 +296,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 primConst
             )
 
+            classBuilder.addAnnotation(
+                AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable"))
+                    .build()
+            )
+
             out.addType(classBuilder.build())
             out.build().writeTo(File(Settings.destinationSrcDir))
         }
