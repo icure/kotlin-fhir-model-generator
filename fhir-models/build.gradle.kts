@@ -85,7 +85,7 @@ kotlin {
     applyDefaultHierarchyTemplate()
 
     js(IR) {
-        moduleName = rootProject.name
+        outputModuleName = rootProject.name
         browser {
             testTask {
                 useKarma {
