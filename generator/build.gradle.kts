@@ -2,6 +2,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -11,7 +12,7 @@ val repoPassword: String by project
 
 plugins {
     alias(libs.plugins.kotlinJvm)
-    id("com.google.devtools.ksp") version "2.0.21-1.0.28"
+    id("com.google.devtools.ksp") version "2.2.21-2.0.4"
     id("application")
     `maven-publish`
 }
@@ -69,6 +70,11 @@ publishing {
 
 kotlin {
     jvmToolchain(21)
+
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+    }
+
     sourceSets {
         val main by getting {
             kotlin.srcDir("src/main/kotlin")
@@ -249,8 +255,4 @@ tasks {
             }
         }
     }
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_21.toString()
 }

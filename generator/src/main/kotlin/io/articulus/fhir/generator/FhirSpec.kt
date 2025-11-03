@@ -6,6 +6,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import java.io.File
 import java.util.*
+import java.util.Locale
+import java.util.Locale.getDefault
 
 
 class FhirSpec(directory: String, val packageName: String, val topLevelClasses: List<String> = listOf(), val makeReadonlyProperties: Boolean = true) {
@@ -87,12 +89,12 @@ class FhirSpec(directory: String, val packageName: String, val topLevelClasses: 
             print("TODO ERROR HERE")
             return false
         }
-        if (profiles.containsKey(profile.name()!!.toLowerCase())) {
+        if (profiles.containsKey(profile.name()!!.lowercase(getDefault()))) {
             print("log key already found")
             return false
         }
 
-        profiles[profile.name()!!.toLowerCase()] = profile
+        profiles[profile.name()!!.lowercase(getDefault())] = profile
         return true
     }
 
@@ -119,7 +121,7 @@ class FhirSpec(directory: String, val packageName: String, val topLevelClasses: 
 
 
     fun asModuleName(name: String): String? {
-        return name.toLowerCase()
+        return name.lowercase(getDefault())
     }
 
 
@@ -129,13 +131,13 @@ class FhirSpec(directory: String, val packageName: String, val topLevelClasses: 
         }
         val pathName = if (parentName != null) "$parentName.$className" else null
 
-        if (pathName != null && Settings.classMap.containsKey(pathName.toLowerCase())) {
-            return Settings.classMap[pathName.toLowerCase()]
+        if (pathName != null && Settings.classMap.containsKey(pathName.lowercase(getDefault()))) {
+            return Settings.classMap[pathName.lowercase(getDefault())]
         }
 
         // is our plain class mapped?
-        if (Settings.classMap.containsKey(className.toLowerCase())) {
-            return Settings.classMap[className.toLowerCase()]
+        if (Settings.classMap.containsKey(className.lowercase(getDefault()))) {
+            return Settings.classMap[className.lowercase(getDefault())]
         }
 
         // CamelCase

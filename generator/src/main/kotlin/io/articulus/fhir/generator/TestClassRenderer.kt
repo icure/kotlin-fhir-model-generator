@@ -17,6 +17,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.io.File
+import java.util.Locale
+import java.util.Locale.getDefault
 
 
 class TestClassRenderer(private val spec: FhirSpec) {
@@ -43,7 +45,7 @@ class TestClassRenderer(private val spec: FhirSpec) {
         if (res.isNullOrBlank()) {
             return
         }
-        val className = Settings.classMap[res.toLowerCase()] ?: res ?: ""
+        val className = Settings.classMap[res.lowercase(getDefault())] ?: res ?: ""
 
         if (className.isNotBlank()) {
             val fhirClass = FhirClass.withName(className)
@@ -65,7 +67,7 @@ open class TestValue(val origTypeName: String, var propName: String?, val value:
     var children = mutableListOf<TestValue>()
     var fieldName = Settings.reservedMap.getOrDefault(propName, propName)
     var castVal = ""
-    var typeName = Settings.classMap.getOrDefault(origTypeName.toLowerCase(), origTypeName)
+    var typeName = Settings.classMap.getOrDefault(origTypeName.lowercase(getDefault()), origTypeName)
     var plainValue = false
     var castClass: String? = null
 }
@@ -163,7 +165,7 @@ class TestValues {
 
         if (testClass.properties.containsKey(safeKey)) {
             val classProp = testClass.properties[safeKey]!!
-            val propType = Settings.classMap.getOrDefault(classProp.typeName.toLowerCase(), classProp.typeName)
+            val propType = Settings.classMap.getOrDefault(classProp.typeName.lowercase(getDefault()), classProp.typeName)
             return if (!classProp.isList() && Settings.primitives.contains(propType)) {
                 addPrimitive(propType, safeKey, jsonObject[origKey].asString)
             } else {

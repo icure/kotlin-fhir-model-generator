@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.UNIT
 import com.squareup.kotlinpoet.WildcardTypeName.Companion.producerOf
@@ -34,7 +35,6 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         val quantitySubClasses = mutableListOf<FhirClass>()
 
         renderManualValueClasses()
-        renderManualClasses()
         renderManualInterfaces()
 
         val allClasses = spec.writeableProfile().flatMap { it.writeableClasses() }
@@ -51,6 +51,8 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                     "Quantity" to spec.packageName,
                     "Meta" to spec.packageName
                 )
+
+        renderManualClasses(packages)
 
         spec.writeableProfile().forEach { profile ->
             val classes = profile.writeableClasses()
@@ -259,21 +261,55 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         out.build().writeTo(File(Settings.destinationSrcDir))
     }
 
-    private fun renderManualClasses() {
+    private fun renderManualClasses(packages: Map<String, String>) {
         Settings.manualClasses.forEach { (name, props) ->
             val out = FileSpec.builder(spec.packageName, name)
-            val classBuilder = TypeSpec.classBuilder(name).addModifiers(KModifier.OPEN)
+            val classBuilder = TypeSpec.classBuilder(name).addModifiers(KModifier.DATA)
 
-            props.forEach { (propName, typeInfo) ->
-                val className = ClassName(spec.packageName, typeInfo.first)
-                val propBuilder = PropertySpec.builder(propName, className).mutable(true)
-                if (typeInfo.second.isNotBlank()) {
-                    propBuilder.initializer(typeInfo.second)
-                }
-                classBuilder.addProperty(propBuilder.build())
+            val propertyTypes = props.mapValues { (_, typeInfo) ->
+                parsePropertyType(typeInfo.first, packages)
             }
+
+            val primConst = FunSpec.constructorBuilder().addParameters(
+                props.map { (propName, typeInfo) ->
+                    val paramBuilder = ParameterSpec
+                        .builder(propName, propertyTypes[propName]!!)
+
+                    if (!typeInfo.second.isNullOrBlank()) {
+                        paramBuilder.defaultValue(typeInfo.second!!)
+                    }
+
+                    paramBuilder.build()
+                }
+            ).build()
+
+            props.forEach { (propName, _) ->
+                classBuilder.addProperty(
+                    PropertySpec.builder(propName, propertyTypes[propName]!!)
+                        .addModifiers(KModifier.PUBLIC)
+                        .initializer(propName)
+                        .build()
+                )
+            }
+
+            classBuilder.primaryConstructor(
+                primConst
+            )
+
             out.addType(classBuilder.build())
             out.build().writeTo(File(Settings.destinationSrcDir))
+        }
+    }
+
+    private fun parsePropertyType(typeString: String, packages: Map<String, String>): TypeName {
+        val listRegex = Regex("^List<([A-Za-z0-9_]+)>$")
+        return if (listRegex.matches(typeString)) {
+            val itemType = listRegex.find(typeString)!!.groups[1]!!.value
+            val className = ClassName(packages[itemType]!!, itemType)
+            val listClassName = ClassName("kotlin.collections", "List")
+            listClassName.parameterizedBy(className)
+        } else {
+            ClassName(spec.packageName, typeString)
         }
     }
 
@@ -356,7 +392,37 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
         classBuilder.addKdoc("%L\n\n%L\n", cls.short, cls.formal)
 
         cls.properties.toSortedMap().forEach { (_, prop) ->
-            classBuilder.addProperty(makeProperty(prop, packages, isInterface = true, isInConstructor = false))
+            val hierarchy = mutableListOf(cls)
+            var marker = cls
+            while (marker.superClass != null) {
+                hierarchy.add(0, marker.superClass!!)
+                marker = marker.superClass!!
+            }
+
+            val overriden = hierarchy.filterIndexed { idx, _ -> idx < hierarchy.size - 1 }
+                .any { it.properties.any { (_, it) -> it.name == prop.name } }
+
+            classBuilder.addProperties(
+                listOfNotNull(
+                    makeProperty(prop, packages, isInterface = true, isInConstructor = false),
+                    if (prop.canBeExtended) {
+                        val typeName = ClassName(spec.packageName, "FhirPrimitiveExtension").isNullable(true)
+                        val fieldName = "_${prop.name}"
+
+                        val propertySpecBuilder = PropertySpec.builder(
+                            name = fieldName,
+                            type = typeName
+                        )
+
+                        if (overriden) {
+                            propertySpecBuilder.addModifiers(KModifier.OVERRIDE)
+                        }
+
+                        propertySpecBuilder.build()
+                    } else null
+
+                )
+            )
         }
 
         kmpOnly {
@@ -424,15 +490,41 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
             primaryCtor.addParameter(makePropertyParameter(prop, packages, forceNotNull = forceNotNull))
             val overriden = hierarchy.filterIndexed { idx, _ -> idx < hierarchy.size - 1 }
                 .any { it.properties.any { (_, it) -> it.name == prop.name } }
-            classBuilder.addProperty(
-                makeProperty(
-                    prop,
-                    packages,
-                    false,
-                    jsonName = if (isTopLevel) Settings.topLevelMappings[prop.name] else null,
-                    forceNotNull = forceNotNull,
-                    isInConstructor = true,
-                    isOverriden = overriden
+            classBuilder.addProperties(
+                listOfNotNull(
+                    makeProperty(
+                        prop,
+                        packages,
+                        false,
+                        jsonName = if (isTopLevel) Settings.topLevelMappings[prop.name] else null,
+                        forceNotNull = forceNotNull,
+                        isInConstructor = true,
+                        isOverriden = overriden
+                    ),
+                    if (prop.canBeExtended) {
+                        val typeName = ClassName(spec.packageName, "FhirPrimitiveExtension").isNullable(true)
+                        val fieldName = "_${prop.name}"
+
+                        val paramSpecBuilder = ParameterSpec.builder(
+                            fieldName,
+                            typeName
+                        ).defaultValue("null")
+
+                        primaryCtor.addParameter(
+                            paramSpecBuilder.build()
+                        )
+
+                        val propertySpecBuilder = PropertySpec.builder(
+                            name = fieldName,
+                            type = typeName
+                        ).initializer(fieldName)
+
+                        if (overriden) {
+                            propertySpecBuilder.addModifiers(KModifier.OVERRIDE)
+                        }
+
+                        propertySpecBuilder.build()
+                    } else null
                 )
             )
         }

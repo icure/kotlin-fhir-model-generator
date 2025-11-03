@@ -87,6 +87,13 @@ object Settings {
                 "FhirDate"
         )
 
+        val extendablePrimitives = listOf(
+            "String",
+            "Int",
+            "Boolean",
+            "Float",
+        )
+
         val enumNameMap = mapOf(
                 "http//hl7.org/fhir/contracttermsubtypecodes" to "ContractTermSubtypeCodes",
                 "http//hl7.org/fhir/coverage-exception" to "CoverageExceptionCodes",
@@ -116,10 +123,11 @@ object Settings {
                 "FhirDate" to "FhirDate.now()"
         )
 
-        val manualClasses = mapOf<String, Map<String, Pair<String, String>>>(
-                /*"FhirAbstractResource" to mapOf(
-                        "resourceType" to Pair("String?", "null")
-                )*/
+        val manualClasses = mapOf<String, Map<String, Pair<String, String?>>>(
+                "FhirPrimitiveExtension" to mapOf(
+                        "id" to Pair("String", null),
+                        "extension" to Pair("List<Extension>", "emptyList()"),
+                )
         )
 
         val manualValueClasses = mapOf<String, Pair<String, Pair<String, String>>>(
