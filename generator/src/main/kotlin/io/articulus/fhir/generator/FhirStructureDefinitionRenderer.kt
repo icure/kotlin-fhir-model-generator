@@ -307,15 +307,41 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
     }
 
     private fun parsePropertyType(typeString: String, packages: Map<String, String>): TypeName {
-        val listRegex = Regex("^List<([A-Za-z0-9_]+)>$")
-        return if (listRegex.matches(typeString)) {
-            val itemType = listRegex.find(typeString)!!.groups[1]!!.value
-            val className = ClassName(packages[itemType]!!, itemType)
-            val listClassName = ClassName("kotlin.collections", "List")
-            listClassName.parameterizedBy(className)
+        val isNullable = typeString.endsWith("?")
+        val baseTypeString = if (isNullable) typeString.dropLast(1) else typeString
+
+        val genericRegex = Regex("^([A-Za-z0-9_]+)<(.+)>$")
+        val baseType = if (genericRegex.matches(baseTypeString)) {
+            val match = genericRegex.find(baseTypeString)!!
+            val containerType = match.groups[1]!!.value
+            val innerTypeString = match.groups[2]!!.value
+
+            val innerType = parsePropertyType(innerTypeString, packages)
+
+            when (containerType) {
+                "List" -> {
+                    val listClassName = ClassName("kotlin.collections", "List")
+                    listClassName.parameterizedBy(innerType)
+                }
+                else -> {
+                    val packageName = packages[containerType] ?: spec.packageName
+                    val containerClassName = ClassName(packageName, containerType)
+                    containerClassName.parameterizedBy(innerType)
+                }
+            }
         } else {
-            ClassName(spec.packageName, typeString)
+            when (baseTypeString) {
+                "String", "Int", "Boolean", "Float" -> {
+                    ClassName("kotlin", baseTypeString)
+                }
+                else -> {
+                    val packageName = packages[baseTypeString] ?: spec.packageName
+                    ClassName(packageName, baseTypeString)
+                }
+            }
         }
+
+        return if (isNullable) baseType.copy(nullable = true) else baseType
     }
 
     private fun renderManualValueClasses() {

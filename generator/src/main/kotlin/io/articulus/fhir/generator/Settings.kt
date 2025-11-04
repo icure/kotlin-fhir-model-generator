@@ -125,7 +125,7 @@ object Settings {
 
         val manualClasses = mapOf<String, Map<String, Pair<String, String?>>>(
                 "FhirPrimitiveExtension" to mapOf(
-                        "id" to Pair("String", null),
+                        "id" to Pair("String?", "null"),
                         "extension" to Pair("List<Extension>", "emptyList()"),
                 )
         )
