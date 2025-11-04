@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "com.icure"
-version = "1.1.0"
+version = "1.1.1"
 
 private fun Project.getLocalProperties() =
     Properties().apply {
