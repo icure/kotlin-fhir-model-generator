@@ -437,7 +437,15 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 listOfNotNull(
                     makeProperty(prop, packages, isInterface = true, isInConstructor = false),
                     if (prop.canBeExtended) {
-                        val typeName = ClassName(spec.packageName, "FhirPrimitiveExtension").isNullable(true)
+                        val baseTypeName = ClassName(spec.packageName, "FhirPrimitiveExtension")
+                        val typeName = if (prop.isList()) {
+                            ClassName("kotlin.collections", "List")
+                                .parameterizedBy(baseTypeName)
+                                .isNullable(true)
+                        } else {
+                            baseTypeName.isNullable(true)
+                        }
+
                         val fieldName = "_${prop.name}"
 
                         val propertySpecBuilder = PropertySpec.builder(
@@ -533,7 +541,15 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                         isOverriden = overriden
                     ),
                     if (prop.canBeExtended) {
-                        val typeName = ClassName(spec.packageName, "FhirPrimitiveExtension").isNullable(true)
+                        val baseTypeName = ClassName(spec.packageName, "FhirPrimitiveExtension")
+                        val typeName = if (prop.isList()) {
+                            ClassName("kotlin.collections", "List")
+                                .parameterizedBy(baseTypeName)
+                                .isNullable(true)
+                        } else {
+                            baseTypeName.isNullable(true)
+                        }
+
                         val fieldName = "_${prop.name}"
 
                         val paramSpecBuilder = ParameterSpec.builder(
