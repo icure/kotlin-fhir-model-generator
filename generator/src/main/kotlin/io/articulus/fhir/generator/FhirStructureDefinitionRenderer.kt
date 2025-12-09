@@ -104,14 +104,12 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                             }
                         }
                     } else {
-                        kmpOnly {
-                            if (c.isResource()) {
-                                resourcesSubClasses.add(c)
-                            }
+                        if (c.isResource()) {
+                            resourcesSubClasses.add(c)
+                        }
 
-                            if (c.isQuantity()) {
-                                quantitySubClasses.add(c)
-                            }
+                        if (c.isQuantity()) {
+                            quantitySubClasses.add(c)
                         }
 
                         buildClass(c, packages, spec.topLevelClasses)
@@ -124,12 +122,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
                 }
         }
 
-        kmpOnly {
-            renderSerializationModule(
-                resourcesSubClasses.sortedBy { klass -> klass.name },
-                quantitySubClasses.sortedBy { klass -> klass.name }
-            )
-        }
+        renderSerializationModule(
+            resourcesSubClasses.sortedBy { klass -> klass.name },
+            quantitySubClasses.sortedBy { klass -> klass.name }
+        )
+
     }
 
     private fun renderSerializationModule(
@@ -464,23 +461,21 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
             )
         }
 
-        kmpOnly {
-            if (cls.name == "Resource" || cls.name == "Quantity") {
-                classBuilder.addAnnotations(
-                    listOfNotNull(
-                        AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable"))
-                            .addMember(
-                                "with = %T::class",
-                                when (cls.name) {
-                                    "Resource" -> ClassName(spec.packageName, "ResourceSerializer")
-                                    "Quantity" -> ClassName(spec.packageName, "QuantitySerializer")
-                                    else -> throw IllegalStateException("Unknown class name: ${cls.name}")
-                                }
-                            )
-                            .build()
-                    ),
-                )
-            }
+        if (cls.name == "Resource" || cls.name == "Quantity") {
+            classBuilder.addAnnotations(
+                listOfNotNull(
+                    AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable"))
+                        .addMember(
+                            "with = %T::class",
+                            when (cls.name) {
+                                "Resource" -> ClassName(spec.packageName, "ResourceSerializer")
+                                "Quantity" -> ClassName(spec.packageName, "QuantitySerializer")
+                                else -> throw IllegalStateException("Unknown class name: ${cls.name}")
+                            }
+                        )
+                        .build()
+                ),
+            )
         }
 
         cls.superClass?.let {
@@ -505,13 +500,11 @@ class FhirStructureDefinitionRenderer(private val spec: FhirSpec) {
 
         classBuilder.addAdditionalInterfaces(cls.name)
 
-        kmpOnly {
-            classBuilder.addAnnotation(
-                AnnotationSpec.builder(ClassName("kotlinx.serialization", "SerialName"))
-                    .addMember("\"${cls.name}\"")
-                    .build()
-            )
-        }
+        classBuilder.addAnnotation(
+            AnnotationSpec.builder(ClassName("kotlinx.serialization", "SerialName"))
+                .addMember("\"${cls.name}\"")
+                .build()
+        )
 
         val hierarchy = mutableListOf(cls)
         var marker = cls

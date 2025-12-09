@@ -12,6 +12,7 @@ val repoPassword: String by project
 
 plugins {
     alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinSerialization)
     id("com.google.devtools.ksp") version "2.2.21-2.0.4"
     id("application")
     `maven-publish`
