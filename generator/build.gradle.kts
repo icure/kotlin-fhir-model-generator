@@ -19,7 +19,7 @@ plugins {
 }
 
 group = "com.icure.fhir"
-version = "1.1.2"
+version = "1.2.0"
 description = "Kotlin on FHIR Model Generator"
 
 application {
